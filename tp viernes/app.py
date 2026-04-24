@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 import os
+#comentario inicial para probar el git
 
 app = Flask(__name__)
 app.secret_key = 'mi_llave_secreta_super_segura'
