@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mate Argento - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="contenedor">
+
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
+
+    <nav>
+        <a href="/">Inicio</a> 
+        
+    </nav>
+    
+    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
+    
+    <br>
+    
+    <h2>Iniciar Sesión</h2>
+    
+    <form action="/login" method="POST">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" placeholder="ejemplo@mail.com" required>
+        <br><br>
+        
+        <label for="pass">Contraseña:</label><br>
+        <input type="password" id="pass" name="password" placeholder="contraseña...">
+        <br><br>
+        
+        <button type="submit">Entrar</button>
+    </form>
+    
+    <br>
+    <p>¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
+    <br>
+</div>
+
+</body>
+</html>

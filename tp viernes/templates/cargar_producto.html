@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel de Admin - Cargar Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Cargar Nuevo Producto</h2>
+        <form method="POST">
+            <label>Nombre del Producto:</label><br>
+            <input type="text" name="nombre" required><br><br>
+
+            <label>Precio:</label><br>
+            <input type="number" step="0.01" name="precio" required><br><br>
+
+            <label>Categoría:</label><br>
+            <select name="categoria">
+                <option value="Mates">Mates</option>
+                <option value="Termos">Termos</option>
+                <option value="Yerbas">Yerbas</option>
+                <option value="Bombillas">Bombillas</option>
+            </select><br><br>
+
+            <label>Nombre de la imagen (ej: mate.jpg):</label><br>
+            <input type="text" name="imagen"><br><br>
+
+            <label>Descripción:</label><br>
+            <textarea name="descripcion"></textarea><br><br>
+
+            <button type="submit">Guardar Producto</button>
+        </form>
+        <br>
+        <a href="/">Volver al inicio</a> 
+    </div>
+</body>
+</html>

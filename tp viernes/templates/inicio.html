@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mate Argento - Inicio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="contenedor">
+
+    <header class="bloque-superior">
+    
+        <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
+
+        <div class="buscador-corto">
+            <input type="text" placeholder="Buscar..." style="border:none; padding:5px; outline:none;">
+            <button>🔍</button>
+        </div>
+
+        <details>
+            <summary>🛒 <b>Mi Carrito (0)</b></summary>       
+                <p>Tu carrito está vacío</p>
+                <hr>
+                <button type="button">Ir a pagar</button>
+        </details>
+    </header>
+    <!-- NUEVO LOGIN  -->
+        <nav>
+            <a href="/">Inicio</a> | 
+    
+            {% if session.get('usuario_nombre') %}
+                <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
+        
+                {% if session.get('usuario_rol') == 'admin' %}
+                <a href="/admin/nuevo_producto" style="color: red; font-weight: bold;">[ PANEL CARGA ]</a> |
+                {% endif %}
+        
+                <a href="/logout">Cerrar Sesión</a>
+            {% else %}
+                <a href="/login">Login</a> | 
+                <a href="/registro">Registrarse</a>
+            {% endif %}
+        </nav>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background-color: #d4edda; color: #155724; padding: 15px; text-align: center; border: 1px solid #c3e6cb; border-radius: 5px; margin: 10px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    
+    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
+     
+    <br><br><hr>
+
+
+    <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
+    <h2>DESTACADOS</h2>
+
+    <div class="contenedor_productos">
+            {% for p in productos %}
+            <div class="tarjeta">
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <br><br>
+                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <br><br>
+                    <a href="/eliminar_producto/{{ p.id }}" 
+                        style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
+                        onclick="return confirm('¿Estás seguro de que querés eliminar este producto?')">
+                        Eliminar Producto
+                    </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+    </div>
+   
+
+    <br><br><hr>
+
+    <form>
+        <label>Dejanos tu opinión:</label><br>
+        <textarea rows="4" cols="25" placeholder="Ingrese su opinion"></textarea>
+        <br>
+        <button type="button">Enviar</button>
+    </form>
+    <br>
+</div>
+
+</body>
+</html>

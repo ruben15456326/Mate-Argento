@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mate Argento - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="contenedor">
+    <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
+    <nav>
+        <a href="/">Inicio</a> | 
+        <a href="/login">Login</a> | 
+        <a href="/registro">Registrarse</a>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alerta-{{ category }}" style="padding: 15px; margin: 10px; border-radius: 5px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
+
+    
+    <h2>{{ producto.nombre }}</h2>
+    
+    <img src="{{ url_for('static', filename='img/' + producto.imagen) }}" 
+         style="width: 300px; border-radius: 10px;">
+    
+    <p>Categoría: <i>{{ producto.categoria }}</i></p>
+    <p>{{ producto.descripcion }}</p>
+    
+    <form action="/agregar_al_carrito/{{ producto.id }}" method="GET">
+        <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
+            Comprar {{ producto.nombre }}
+        </button>
+    </form>
+
+    
+    <br><br>
+    <a href="/">Volver al inicio</a> 
+
+    <br>
+</div>
+
+</body>
+</html>
