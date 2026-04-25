@@ -95,3 +95,25 @@ h3 {
     border: none;
     padding: 5px 10px;
 }
+/* Notificación Push Moderna */
+.mensaje-push {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    z-index: 9999;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    animation: aparecer 0.5s ease-out;
+}
+
+/* Animación para que aparezca suave */
+@keyframes aparecer {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}

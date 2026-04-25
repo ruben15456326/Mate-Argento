@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, flash
+from flask import Flask, render_template, request,url_for, session, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 import os
 #comentario inicial para probar el git
@@ -54,8 +54,10 @@ def vista_login():
             session['usuario_nombre'] = user.nombre
             session['usuario_rol'] = user.rol
             session['carrito'] = [] # Inicializamos el carrito vacío
-            return f"<h1>Bienvenido {user.nombre}</h1><a href='/'>Inicio</a>"
-        return "<h1>Error de datos</h1><a href='/login'>Volver</a>"
+            flash(f"¡Hola de nuevo, {user.nombre}!") 
+            return redirect(url_for('inicio'))
+        flash("Email o contraseña incorrectos")
+        return redirect(url_for('vista_login'))
     return render_template('login.html')
 
 # RUTA PARA AGREGAR AL CARRITO (SOLO PARA USUARIOS LOGUEADOS)
@@ -99,9 +101,20 @@ def registrar_usuario():
         email=request.form.get('email'),
         password=request.form.get('password')
     )
+    email = request.form.get('email')
+    #BUSCAMOS si ya existe alguien con ese email
+    usuario_existente = Usuario.query.filter_by(email = email ).first()
+
+    #COMPARAMOS
+    if usuario_existente: # Si existe, frenamos todo acá
+        flash("Ese mail ya está en uso") # <--- El mensaje push
+        return redirect(url_for('vista_registro'))
+    
+    #SI NO EXISTE, recién ahí creamos el nuevo
     db.session.add(nuevo) # Lo agregamos
     db.session.commit()   # Guardamos de verdad
-    return f"<h1>Registrado con éxito</h1><a href='/login'>Ir al Login</a>"
+    flash(f"¡Bienvenido {nuevo.nombre}! Usuario creado con exito.") # <--- El mensaje push
+    return redirect(url_for('vista_login')) # <--- TE MANDA DIRECTO AL INICIO
 
 # NUEVA RUTA PARA CARGAR PRODUCTOS (SOLO PARA ADMIN)
 
