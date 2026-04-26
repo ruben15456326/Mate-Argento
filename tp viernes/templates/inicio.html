@@ -41,8 +41,6 @@
     </header>
     
     <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
-     
-    <br><br><hr>
 
     <header class="bloque-superior">
         <hr>
@@ -58,85 +56,77 @@
     <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
     <h2>DESTACADOS</h2>
 
-    <h2 class="titulo-categoria">YERBAS</h2>
-    <div class="contenedor_productos">
-        {% for p in productos if p.categoria == 'Yerbas' %}
+    <div class="contenedor-padre">
+
         <div class="tarjeta">
-            <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-            <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            <br><br>
-            <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" 
-                    style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
-                    onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-            {% endif %}
+            <a href="#" class="enlace-titulo"><h2>YERBAS</h2></a>
+            {% for p in productos if p.categoria == 'Yerbas' %}
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <br><br>
+                    <a href="/eliminar_producto/{{ p.id }}" 
+                        style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
+                        onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                {% endif %}
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
 
-    <hr> <h2 class="titulo-categoria">MATES</h2>
-    <div class="contenedor_productos">
-        {% for p in productos if p.categoria == 'Mates' %}
         <div class="tarjeta">
-            <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-            <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            <br><br>
-            <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
+
+            <a href="#" class="enlace-titulo"><h2>MATES</h2></a>
+            {% for p in productos if p.categoria == 'Mates' %}
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <br><br>
+                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+                {% endif %}
+            {% endfor %}
+
         </div>
-        {% endfor %}
-    </div>
 
-    <hr>
-
-    <h2 class="titulo-categoria">BOMBILLAS</h2>
-    <div class="contenedor_productos">
-        {% for p in productos if p.categoria == 'Bombillas' %}
         <div class="tarjeta">
-            <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-            <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            <br><br>
-            <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
+
+            <a href="#" class="enlace-titulo"><h2>BOMBILLAS</h2></a>
+            {% for p in productos if p.categoria == 'Bombillas' %}
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <br><br>
+                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+                {% endif %}
+            {% endfor %}
+
         </div>
-        {% endfor %}
-    </div>
 
-    <hr>
-
-    <h2 class="titulo-categoria">TERMOS</h2>
-    <div class="contenedor_productos">
-        {% for p in productos if p.categoria == 'Termos' %}
         <div class="tarjeta">
-            <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-            <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            <br><br>
-            <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
+
+            <a href="#" class="enlace-titulo"><h2>TERMOS</h2></a>
+            {% for p in productos if p.categoria == 'Termos' %}
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <br><br>
+                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+                {% endif %}
+            {% endfor %}
         </div>
-        {% endfor %}
+
     </div>
    
-
     <br><br><hr>
 
     <form>
