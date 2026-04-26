@@ -4,53 +4,12 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
     <title>Mate Argento - Inicio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="mensaje-push" id="notificacion">{{ messages[0] }}</div>
-            <script>setTimeout(() => document.getElementById('notificacion').remove(), 3000);</script>
-        {% endif %}
-    {% endwith %}
-
 <div class="contenedor">
 
-    <header class="bloque-superior">
-        <a href="/">
-            <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
-        </a>
-        <div class="buscador-corto">
-            <input type="text" placeholder="Buscar..." style="border:none; padding:5px; outline:none;">
-            <button>🔍</button>
-        </div>
-
-        <nav>
-            {% if session.get('usuario_nombre') %}
-                <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <a href="/admin/nuevo_producto" style="color: red; font-weight: bold;">[ PANEL CARGA ]</a> |
-                {% endif %}
-                <a href="/logout">Cerrar Sesión</a>
-            {% else %}
-                <a href="/login">Login</a> | 
-                <a href="/registro">Registrarse</a>
-            {% endif %}
-        </nav>
-
-    </header>
-    
-    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
-
-    <header class="bloque-superior">
-        <hr>
-        <br>
-        <details>
-            <summary>🛒 <b>Mi Carrito (0)</b></summary>       
-                <p>Tu carrito está vacío</p>
-                <hr>
-                <button type="button">Ir a pagar</button>
-        </details>
-    </header>
+    {% include 'base.html' %}
 
     <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
     <h2>Productos destacados</h2>

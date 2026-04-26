@@ -6,15 +6,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="mensaje-push" id="notificacion">{{ messages[0] }}</div>
-            <script>setTimeout(() => document.getElementById('notificacion').remove(), 3000);</script>
-        {% endif %}
-    {% endwith %}
-
     <div class="contenedor">
+
+        {% include 'base.html' %}
+    
         <h2>Cargar Nuevo Producto</h2>
         <form method="POST">
             <label>Nombre del Producto:</label><br>

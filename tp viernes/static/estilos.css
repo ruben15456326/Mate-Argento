@@ -162,3 +162,62 @@ h3 {
     min-height: 100vh;      /* Hace que use todo el alto de la pantalla */
     text-align: center;     /* Asegura que el texto interno también se centre */
 }
+
+.bloque-cuenta {
+    position: absolute; /* Se despega del flujo normal */
+    top: 14%;          /* Distancia desde arriba */
+    right: 10%;          /* Distancia desde la derecha */
+    display: flex;
+    align-items: flex-start; /* Centra verticalmente el icono con los textos */
+    font-family: 'Arial', sans-serif;
+    gap: 12px; /* Espacio entre el icono y la columna de texto */
+    text-decoration: none;
+}
+
+.icono-usuario {
+    font-size: 32px; /* Tamaño grande para la personita */
+    color: #333;
+}
+
+.enlaces-cuenta {
+    display: flex;
+    flex-direction: column; /* Pone un link arriba del otro */
+    justify-content: center;
+}
+
+.link-cuenta {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase; /* Lo pone en MAYÚSCULAS como el original */
+    color: #000;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.link-cuenta-secundario {
+    font-size: 13px;
+    color: #666; /* Gris más clarito para el de abajo */
+    text-decoration: none;
+    margin-top: 2px;
+}
+
+/* Efectos al pasar el mouse */
+.link-cuenta:hover, .link-cuenta-secundario:hover {
+    color: #28a745; /* El verdecito que querías para Mate Argento */
+}
+/* 2. El efecto cuando pasas el mouse */
+summary:hover .enlace-titulo {
+    color: #28a745; /* El verde que venís usando */
+    transition: 0.3s;
+}
+summary:hover {
+    color: #28a745;
+}
+/* Quitar la flechita en Chrome, Safari y Edge */
+summary::-webkit-details-marker {
+    display: none;
+}
+/* Quitar la flechita en Firefox */
+summary {
+    display: block;
+}

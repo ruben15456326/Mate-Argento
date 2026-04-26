@@ -8,26 +8,7 @@
 <body>
 <div class="contenedor">
 
-    <a href="/">
-        <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
-    </a>
-
-    <nav>
-        <a href="/login">Login</a> | 
-        <a href="/registro">Registrarse</a>
-    </nav>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alerta-{{ category }}" style="padding: 15px; margin: 10px; border-radius: 5px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center;">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-    
-    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
+    {% include 'base.html' %}
 
     <br><br><br>
     <div class="contenedor-padre2">

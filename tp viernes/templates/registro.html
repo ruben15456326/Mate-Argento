@@ -4,6 +4,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
     <title>Mate Argento - Registrarse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -15,14 +16,9 @@
 
 <div class="contenedor">
 
-    <a href="/">
-        <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
-    </a>
+    {% include 'base.html' %}
 
     <div class="todo-centrado">
-
-    
-    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
     
     <br>
     
