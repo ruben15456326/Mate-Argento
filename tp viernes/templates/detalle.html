@@ -6,11 +6,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
-
 <div class="contenedor">
-    <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+
+    <a href="/">
+        <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+    </a>
+
+    <div class="todo-centrado">
     <nav>
-        <a href="/">Inicio</a> | 
         <a href="/login">Login</a> | 
         <a href="/registro">Registrarse</a>
     </nav>
@@ -46,7 +49,7 @@
     <a href="/">Volver al inicio</a> 
 
     <br>
+    </div>
 </div>
-
 </body>
 </html>

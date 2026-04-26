@@ -16,16 +16,15 @@
 <div class="contenedor">
 
     <header class="bloque-superior">
-    
-        <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
-
+        <a href="/">
+            <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+        </a>
         <div class="buscador-corto">
             <input type="text" placeholder="Buscar..." style="border:none; padding:5px; outline:none;">
             <button>🔍</button>
         </div>
 
         <nav>
-            <a href="/">Inicio</a> | 
             {% if session.get('usuario_nombre') %}
                 <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
                 {% if session.get('usuario_rol') == 'admin' %}
@@ -54,80 +53,72 @@
     </header>
 
     <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
-    <h2>DESTACADOS</h2>
+    <h2>Productos destacados</h2>
 
     <div class="contenedor-padre">
 
         <div class="tarjeta">
-            <a href="#" class="enlace-titulo"><h2>YERBAS</h2></a>
-            {% for p in productos if p.categoria == 'Yerbas' %}
-                <h4>{{ p.nombre }}</h4>
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-                <p><b>${{ p.precio }}</b></p>
-                <a href="/detalle/{{ p.id }}">Ver detalle</a>
-                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <br><br>
-                    <a href="/eliminar_producto/{{ p.id }}" 
-                        style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
-                        onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                {% endif %}
-            {% endfor %}
+            <a href="/seccion/Yerbas" class="enlace-titulo"><h3>YERBAS</h3></a>
+            {% set p = productos | selectattr("categoria", "equalto", "Yerbas") | first %}
+            <h4>{{ p.nombre }}</h4>
+            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <p><b>${{ p.precio }}</b></p>
+            <a href="/detalle/{{ p.id }}">Ver detalle</a>
+            {% if session.get('usuario_rol') == 'admin' %}
+                <br><br>
+                <a href="/eliminar_producto/{{ p.id }}" 
+                    style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
+                    onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+            {% endif %}
         </div>
 
         <div class="tarjeta">
 
-            <a href="#" class="enlace-titulo"><h2>MATES</h2></a>
-            {% for p in productos if p.categoria == 'Mates' %}
-                <h4>{{ p.nombre }}</h4>
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-                <p><b>${{ p.precio }}</b></p>
-                <a href="/detalle/{{ p.id }}">Ver detalle</a>
-                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <br><br>
-                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-                {% endif %}
-            {% endfor %}
-
-        </div>
-
-        <div class="tarjeta">
-
-            <a href="#" class="enlace-titulo"><h2>BOMBILLAS</h2></a>
-            {% for p in productos if p.categoria == 'Bombillas' %}
-                <h4>{{ p.nombre }}</h4>
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-                <p><b>${{ p.precio }}</b></p>
-                <a href="/detalle/{{ p.id }}">Ver detalle</a>
-                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <br><br>
-                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-                {% endif %}
-            {% endfor %}
+            <a href="/seccion/Mates" class="enlace-titulo"><h3>MATES</h3></a>
+            {% set p = productos | selectattr("categoria", "equalto", "Mates") | first %}
+            <h4>{{ p.nombre }}</h4>
+            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <p><b>${{ p.precio }}</b></p>
+            <a href="/detalle/{{ p.id }}">Ver detalle</a>
+            {% if session.get('usuario_rol') == 'admin' %}
+                <br><br>
+                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+            {% endif %}
 
         </div>
 
         <div class="tarjeta">
 
-            <a href="#" class="enlace-titulo"><h2>TERMOS</h2></a>
-            {% for p in productos if p.categoria == 'Termos' %}
-                <h4>{{ p.nombre }}</h4>
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
-                <p><b>${{ p.precio }}</b></p>
-                <a href="/detalle/{{ p.id }}">Ver detalle</a>
-                <a href="/agregar_al_carrito/{{ p.id }}">🛒 Comprar</a>
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <br><br>
-                    <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-                {% endif %}
-            {% endfor %}
+            <a href="/seccion/Bombillas" class="enlace-titulo"><h3>BOMBILLAS</h3></a>
+            {% set p = productos | selectattr("categoria", "equalto", "Bombillas") | first %}
+            <h4>{{ p.nombre }}</h4>
+            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <p><b>${{ p.precio }}</b></p>
+            <a href="/detalle/{{ p.id }}">Ver detalle</a>
+            {% if session.get('usuario_rol') == 'admin' %}
+                <br><br>
+                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+            {% endif %}
+
+        </div>
+
+        <div class="tarjeta">
+
+            <a href="/seccion/Termos" class="enlace-titulo"><h3>TERMOS</h3></a>
+            {% set p = productos | selectattr("categoria", "equalto", "Termos") | first %}
+            <h4>{{ p.nombre }}</h4>
+            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <p><b>${{ p.precio }}</b></p>
+            <a href="/detalle/{{ p.id }}">Ver detalle</a>
+            {% if session.get('usuario_rol') == 'admin' %}
+                <br><br>
+                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
+            {% endif %}
         </div>
 
     </div>
    
-    <br><br><hr>
+    <br><br>
 
     <form>
         <label>Dejanos tu opinión:</label><br>

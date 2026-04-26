@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <title>Mate Argento - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+<div class="contenedor">
+
+    <a href="/">
+        <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+    </a>
+
+    <nav>
+        <a href="/login">Login</a> | 
+        <a href="/registro">Registrarse</a>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alerta-{{ category }}" style="padding: 15px; margin: 10px; border-radius: 5px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; text-align: center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
+
+    <br><br><br>
+    <div class="contenedor-padre2">
+        {% for p in productos %}
+            <div class="tarjeta">
+                <h4>{{ p.nombre }}</h4>
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <p><b>${{ p.precio }}</b></p>
+                <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                <form action="/agregar_al_carrito/{{ p.id }}" method="GET">
+                    <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
+                        Comprar
+                    </button>
+                </form>
+                {% if session.get('usuario_rol') == 'admin' %}
+                    <a href="/eliminar_producto/{{ p.id }}" ...>Eliminar</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No hay productos en esta categoría todavía.</p>
+        {% endfor %}
+    </div>
+
+    <br><br>
+    <a href="/">Volver al inicio</a> 
+
+    <br>
+</div>
+</body>
+</html>

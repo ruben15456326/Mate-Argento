@@ -134,8 +134,8 @@ def nuevo_producto():
         nuevo = Producto(nombre=nombre, precio=precio, categoria=categoria, imagen=imagen, descripcion=descripcion)
         db.session.add(nuevo)
         db.session.commit()
-        return "Producto cargado con éxito. <a href='/'>Volver</a>"
-    
+        flash(f"¡Producto {nuevo.nombre}! agregado con exito.") # <--- El mensaje push
+        return redirect(url_for('inicio')) # <--- TE MANDA DIRECTO AL INICIO
     # Si es GET, mostramos el formulario
     return render_template('cargar_producto.html')
 
@@ -169,6 +169,14 @@ def detalle_producto(id):
     else:
         return "Producto no encontrado", 404
     
+@app.route('/seccion/<categoria_nom>')
+def ver_seccion(categoria_nom):
+    # Buscamos los productos. 
+    # IMPORTANTE: Asegúrate que en la base de datos sea 'Yerbas' y no 'yerbas'
+    productos_filtrados = Producto.query.filter_by(categoria=categoria_nom).all()
+    
+    # Aquí le mandamos los productos a tu archivo productos.html
+    return render_template('productos.html', productos=productos_filtrados, titulo=categoria_nom)
     
 #SE CREA UN ADMIN INICIAL PARA PODER PROBAR EL PANEL DE ADMINISTRACIÓN (LUEGO SE PODRÁ CREAR DESDE EL PANEL)
 @app.route('/crear_admin_inicial')

@@ -15,12 +15,11 @@
 
 <div class="contenedor">
 
-    <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+        <a href="/">
+            <img src="{{ url_for('static', filename='img/logof.png') }}" class="logo-personalizado" alt="Mate Argento">
+        </a>
 
-    <nav>
-        <a href="/">Inicio</a> 
-        
-    </nav>
+    <div class="todo-centrado">
     
     <img src="{{ url_for('static', filename='img/fondo2.png') }}" class="ancho-total">
     
@@ -43,6 +42,7 @@
     <br>
     <p>¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
     <br>
+    </div>
 </div>
 
 </body>
