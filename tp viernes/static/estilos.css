@@ -1,7 +1,7 @@
 body {
     background-color: #ccc;
     /* Flask busca la carpeta img que está al mismo nivel que el CSS */
-    background-image: url('img/fondo.avif'); 
+    background-image: url('img/argentina.jpg'); 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -12,7 +12,7 @@ body {
 .contenedor {
     width: 1000px;
     margin: auto;
-    background-color: #CFE1EF;
+    background-color: #fff;
     /* Ajustado para que encuentre el fondo verde */
     background-size: cover;
     background-repeat: no-repeat;
@@ -39,7 +39,7 @@ body {
 
 h2 {
     font-family: 'Georgia', serif;
-    font-size: 35px;
+    font-size: 25px;
     font-style: italic;
     text-transform: uppercase;
     color: #3e2723;
@@ -87,12 +87,12 @@ h3 {
 .buscador-corto {
     display: flex;
     border-radius: 20px;
-    border: 1px solid #ccc;
+    border: 3px solid #ccc;
     overflow: hidden;
 }
 
 .buscador-corto button {
-    background: #007bff; /* Azul */
+    background: #90b9db; /* Azul */
     color: white;
     border: none;
     padding: 5px 10px;
