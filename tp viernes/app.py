@@ -131,6 +131,37 @@ def agregar_al_carrito(id):
     flash(f"¡{producto.nombre} se agregó al carrito!", "success")
     # En vez de volver al inicio, volvemos al detalle de ese mismo producto
     return redirect(f'/detalle/{id}') 
+# Carga los datos del carrito
+@app.context_processor
+def procesar_carrito():
+    # 1. Obtenemos los IDs de la sesión
+    carrito_ids = session.get('carrito', [])
+    
+    productos_carrito = []
+    total = 0
+    
+    # 2. Buscamos los datos reales de cada producto
+    if carrito_ids:
+        for p_id in carrito_ids:
+            p = Producto.query.get(p_id)
+            if p:
+                productos_carrito.append(p)
+                total += p.precio
+                
+    # 3. Retornamos las variables para que el HTML las vea
+    return dict(carrito_html=productos_carrito, total_carrito=total)
+@app.route('/eliminar_del_carrito/<int:id>')
+def eliminar_del_carrito(id):
+    if 'carrito' in session:
+        carrito = list(session['carrito'])
+        if id in carrito:
+            carrito.remove(id) # Quita la primera coincidencia del ID
+            session['carrito'] = carrito
+            session.modified = True
+            flash("Producto eliminado del carrito", "info")
+    
+    # Redirigir a la página donde estaba el usuario
+    return redirect(request.referrer or '/')
 # RUTA PARA CERRAR SESIÓN
 @app.route('/logout')
 def logout():
