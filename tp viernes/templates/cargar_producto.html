@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
     <title>Panel de Admin - Cargar Producto</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
     <div class="contenedor">
 
-        {% include 'base.html' %}
-    
+        {% extends 'base.html' %}
+        {% block content %}
+
+        <div class="todo-centrado">
+
         <h2>Cargar Nuevo Producto</h2>
         <form method="POST">
             <label>Nombre del Producto:</label><br>
@@ -36,6 +36,9 @@
         </form>
         <br>
         <a href="/">Volver al inicio</a> 
+
+        </div>
+    {% endblock %}
     </div>
 </body>
 </html>

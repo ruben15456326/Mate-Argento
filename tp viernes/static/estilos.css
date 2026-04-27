@@ -1,3 +1,4 @@
+                                                    /* BODY GENERAL*/
 body {
     background-color: #ccc;
     /* Flask busca la carpeta img que está al mismo nivel que el CSS */
@@ -8,6 +9,10 @@ body {
     margin: 0;
     padding: 20px;
 }
+
+
+                                                /* CONTENEDORES*/
+
 
 .contenedor {
     width: 80%;
@@ -28,27 +33,40 @@ body {
     margin-right: 20px;
 }
 
-.ancho-total {
-    width: calc(100% + 40px) !important; 
-    margin-left: -20px !important;      
-    max-width: none !important;
-    display: block; 
-    height: 200px; 
-    object-fit: cover;
+.contenedor-padre {
+    display: flex;             /* Activa el modo flexible */
+    flex-direction: row;       /* Los pone en fila (horizontal) */
+    justify-content: space-between; /* Deja espacio igual entre los 4 */
+    align-items: center;       /* Los centra verticalmente */
+    padding: 20px;
+    background-color: #CADDEE; /* Color para que lo veas */
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
 }
 
-h2 {
-    font-family: 'Georgia', serif;
-    font-size: 25px;
-    font-style: italic;
-    text-transform: uppercase;
-    color: #3e2723;
+.contenedor-padre2 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;        /* ¡IMPORTANTE! Permite que las tarjetas bajen a otra fila si no entran */
+    justify-content: center; /* Cambia space-between por center para que queden agrupadas si son pocas */
+    align-items: center;
+    gap: 20px;              /* Esto crea un espacio exacto y parejo entre las tarjetas */
+    padding: 20px;
+    background-color: #90b9db;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    min-height: 200px;      /* Por si la categoría está vacía, que no se vea el fondo aplastado */
 }
 
-h3 {
-    font-family: Arial, sans-serif;
-    font-size: 30px;
+.contenedor-padre3 {
+    flex-direction: row;       /* Los pone en fila (horizontal) */
+    justify-content: space-between; /* Deja espacio igual entre los 4 */
+    align-items: center;       /* Los centra verticalmente */
+    background-color: #000; /* Color para que lo veas */
 }
+
+
+                                            /* BLOQUES */
 
 /* 1. Arma el bloque horizontal con espaciado general */
 .bloque-superior {
@@ -60,11 +78,88 @@ h3 {
     padding: 10px 20px;
 }
 
-/* 2. Controla solo la imagen */
+.bloque-cuenta {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center; 
+    gap: 15px;
+    font-family: 'Arial', sans-serif;
+    /*white-space: nowrap;*/
+}
+
+                                      /* NOTIFICACION PUSH MODERNA */
+
+.mensaje-push {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    z-index: 9999;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    animation: aparecer 0.5s ease-out;
+}
+
+/* Animación para que aparezca suave */
+@keyframes aparecer {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}
+
+                                            /* LETRAS */
+
+h2 {
+    font-family: 'Georgia', serif;
+    font-size: 25px;
+    font-style: italic;
+    text-transform: uppercase;
+    color: #3e2723;
+}
+
+h3 {
+    /* En lugar de 30px, usamos una mezcla */
+    font-size: clamp(18px, 1,8vw, 30px); 
+    /* Explicación del clamp:
+       - 18px: Es lo mínimo que va a medir (para que no sea ilegible en celu)
+       - 2.5vw: Es su tamaño ideal (fluido)
+       - 32px: Es lo máximo (para que no sea gigante en tu monitor de alta resolución)
+    */
+    width: 100%;           /* Que ocupe todo el ancho interno */
+    margin-left: 0;        /* Reseteamos márgenes que puedan estar molestando */
+    margin-right: 0;
+    padding: 0;
+    display: block;
+    text-align: center;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+                       /* SE USA PARA QUE LA IMAGEN LARGA DEL MEDIO NO SALGA DEL CONTENEDOR */
+
+.ancho-total {
+    width: calc(100% + 40px) !important; 
+    margin-left: -20px !important;      
+    max-width: none !important;
+    display: block; 
+    height: 200px; 
+    object-fit: cover;
+}
+
+
+                              /* TAMAÑO DEL LOGO PRINCIPAL, PARA ACHICARLO */
+
 .logo-personalizado {
     width: 150px;
     height: auto;
 }
+
+                                  /* TARJETAS DE LOS PRODUCTOS DEL INICIO Y EL PIE DE PAGINA */
 
 .tarjeta {
     background-color: #fff;
@@ -85,6 +180,28 @@ h3 {
     object-fit: contain;
     align-self: center;
 }
+
+.tarjeta-pie{
+    background-color: #CADDEE;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el precio y botón al final */
+    height: 100%;
+    box-sizing: border-box;
+}
+
+                                    /* USADO EN LOS LINKS PARA ACCEDER A LAS CAT. DEL INICIO */
+
+.enlace-titulo {
+    text-decoration: none; /* Saca el subrayado */
+    color: #2c3e50;        /* Color elegante */
+}
+
+                                     /* BUSCADOR USADO EN LA BASE, CONTROLA TAMAÑO, COLORES */
 
 .buscador-corto {
     display: flex;
@@ -112,64 +229,10 @@ h3 {
     outline: none;
     min-width: 0;      /* [TRUCO] Evita que el input rompa el contenedor en pantallas muy chicas */
 }
-/* Notificación Push Moderna */
-.mensaje-push {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 12px 25px;
-    border-radius: 50px;
-    z-index: 9999;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    animation: aparecer 0.5s ease-out;
-}
-
-/* Animación para que aparezca suave */
-@keyframes aparecer {
-    from { top: -50px; opacity: 0; }
-    to { top: 20px; opacity: 1; }
-}
 
 
-.contenedor-padre {
-    display: flex;             /* Activa el modo flexible */
-    flex-direction: row;       /* Los pone en fila (horizontal) */
-    flex-wrap: wrap;
-    justify-content: space-between; /* Deja espacio igual entre los 4 */
-    align-items: center;       /* Los centra verticalmente */
-    padding: 20px;
-    background-color: #90b9db; /* Color para que lo veas */
-    border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-}
+                       /* CENTRA EL TEXTO DE LA PAGINA DE LOGIN,REGISTRO, CARGAR PRODUCTOS Y PRODUCTOS */
 
-.contenedor-padre2 {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;        /* ¡IMPORTANTE! Permite que las tarjetas bajen a otra fila si no entran */
-    justify-content: center; /* Cambia space-between por center para que queden agrupadas si son pocas */
-    align-items: center;
-    gap: 20px;              /* Esto crea un espacio exacto y parejo entre las tarjetas */
-    padding: 20px;
-    background-color: #90b9db;
-    border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-    min-height: 200px;      /* Por si la categoría está vacía, que no se vea el fondo aplastado */
-}
-
-.enlace-titulo {
-    text-decoration: none; /* Saca el subrayado */
-    color: #2c3e50;        /* Color elegante */
-}
-
-.enlace-titulo:hover h3 {
-    color: #27ae60;        /* Cambia a verde al pasar el mouse */
-}
 .todo-centrado {
     display: flex;
     flex-direction: column; /* Alinea los elementos uno abajo del otro */
@@ -179,26 +242,21 @@ h3 {
     text-align: center;     /* Asegura que el texto interno también se centre */
 }
 
-.bloque-cuenta {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center; 
-    gap: 15px;
-    font-family: 'Arial', sans-serif;
-    /*white-space: nowrap;*/
-}
-
+                                 /* ICONO DE LA PERSONITA EN EL LOGIN/REGISTER */
 .icono-usuario {
     font-size: 32px; /* Tamaño grande para la personita */
     color: #333;
 }
+
+                                          /* LINK ENCIMA DEL OTRO EN LOGIN/REGISTER */
 
 .enlaces-cuenta {
     display: flex;
     flex-direction: column; /* Pone un link arriba del otro */
     justify-content: center;
 }
+
+                                             /*INICIAR SESION EN MAYUSCULAS*/
 
 .link-cuenta {
     font-size: 14px;
@@ -209,6 +267,8 @@ h3 {
     line-height: 1.2;
 }
 
+                                                  /* REGISTER EN COLOR CLARITO */
+
 .link-cuenta-secundario {
     font-size: 13px;
     color: #666; /* Gris más clarito para el de abajo */
@@ -216,23 +276,23 @@ h3 {
     margin-top: 2px;
 }
 
-/* Efectos al pasar el mouse */
-.link-cuenta:hover, .link-cuenta-secundario:hover {
-    color: #28a745; /* El verdecito que querías para Mate Argento */
-}
-/* 2. El efecto cuando pasas el mouse */
-summary:hover .enlace-titulo {
-    color: #28a745; /* El verde que venís usando */
-    transition: 0.3s;
-}
-summary:hover {
-    color: #28a745;
-}
-/* Quitar la flechita en Chrome, Safari y Edge */
+
+                                     /* QUITAR LA FLECHITA PARA BAJAR EN EL CARRITO */
 summary::-webkit-details-marker {
     display: none;
 }
-/* Quitar la flechita en Firefox */
-summary {
-    display: block;
+
+                                      /* COLOR VERDE AL PASAR EL MOUSE CON RETRASO */
+.efecto-verde:hover {
+    color: #28a745 !important;
+    transition: 0.3s;
+    cursor: pointer;
+}
+                                    /* MODIFICA EL FOOTER DEL PIE DE PAGINA PARA Q SE ESQUINE*/
+footer {
+    width: calc(100% + 40px) !important;     
+    padding: 0 !important;
+    margin-left: -20px !important; 
+    margin-right: -20px !important;
+    margin-bottom: -20px !important;
 }

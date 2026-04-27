@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <title>Mate Argento - Inicio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="mensaje-push" id="notificacion">{{ messages[0] }}</div>
@@ -52,6 +54,50 @@
     </header>
     
     <img src="{{ url_for('static', filename='img/fondo_lindo2.png') }}" class="ancho-total">
+
+    <main style="min-height: 80vh;">{% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="pie-pagina">
+        <div class="contenedor-padre">
+            <div class="tarjeta-pie">
+                <h3>Mate Argento 2026</h3>
+                <p>&copy; Todos los derechos reservados.</p>
+                <p><em>Pasión por nuestra tradición.</em></p>
+                <form>
+                    <label>Dejanos tu opinión:</label><br>
+                    <textarea rows="4" cols="15" placeholder="Ingrese su opinion"></textarea>
+                    <br>
+                        <button type="button">Enviar</button>
+                </form>
+            </div>
+
+            <div class="tarjeta-pie">
+                <h3>Secciones</h3>
+                <p>Inicio</p>
+                <p>Mates y Termos</p>
+                <p>Yerbas Especiales</p>
+                <p>Mi Cuenta</p>
+            </div>
+
+            <div class="tarjeta-pie">
+                <h3>Atención al Cliente</h3>
+                <p>Envíos a todo el país</p>
+                <p>Preguntas Frecuentes</p>
+                <p>Cambios y Devoluciones</p>
+                <p>Seguí tu pedido</p>
+            </div>
+
+            <div class="tarjeta-pie">
+                <h3>Contacto</h3>
+                <p>WhatsApp: +54 9 11 6501-6068</p>
+                <p>info@mateargento.com.ar</p>
+                <p>Instagram: @MateArgento_OK</p>
+            </div>
+        </div>
+
+    </footer>
 
 </body>
 </html>

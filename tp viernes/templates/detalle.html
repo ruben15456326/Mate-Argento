@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
 <head>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
-    <title>Mate Argento - Login</title>
+    <title>Mate Argento - Detalle</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -10,30 +8,28 @@
 
 <div class="contenedor">
 
-    {% include 'base.html' %}
+    {% extends 'base.html' %}
+    {% block content %}
 
     <div class="todo-centrado">
 
-    <h2>{{ producto.nombre }}</h2>
-    
-    <img src="{{ url_for('static', filename='img/' + producto.imagen) }}" 
-         style="width: 300px; border-radius: 10px;">
-    
-    <p>Categoría: <i>{{ producto.categoria }}</i></p>
-    <p>{{ producto.descripcion }}</p>
-    
-    <form action="/agregar_al_carrito/{{ producto.id }}" method="GET">
-        <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
-            Comprar
-        </button>
-    </form>
+        <h2>{{ producto.nombre }}</h2>
+ 
+        <img src="{{ url_for('static', filename='img/' + producto.imagen) }}" 
+            style="width: 300px; border-radius: 10px;">
 
-    
-    <br><br>
-    <a href="/">Volver al inicio</a> 
+        <p>Categoría: <i>{{ producto.categoria }}</i></p>
+        <p>{{ producto.descripcion }}</p>
 
-    <br>
-    </div>
+        <form action="/agregar_al_carrito/{{ producto.id }}" method="GET">
+            <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
+                Comprar
+            </button>
+        </form>
+
+
+        <br>
+    </div>    
+    {% endblock %}
 </div>
 </body>
-</html>

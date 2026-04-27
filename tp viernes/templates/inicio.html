@@ -9,15 +9,15 @@
 <body>
 <div class="contenedor">
 
-    {% include 'base.html' %}
-
+    {% extends 'base.html' %}
+    {% block content %}
     <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
     <h2>Productos destacados</h2>
 
     <div class="contenedor-padre">
 
         <div class="tarjeta">
-            <a href="/seccion/Yerbas" class="enlace-titulo"><h3>YERBAS</h3></a>
+            <a href="/seccion/Yerbas" class="enlace-titulo efecto-verde"><h3>YERBAS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Yerbas") | first %}
             <h4>{{ p.nombre }}</h4>
             <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
@@ -33,7 +33,7 @@
 
         <div class="tarjeta">
 
-            <a href="/seccion/Mates" class="enlace-titulo"><h3>MATES</h3></a>
+            <a href="/seccion/Mates" class="enlace-titulo efecto-verde"><h3>MATES</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Mates") | first %}
             <h4>{{ p.nombre }}</h4>
             <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
@@ -48,7 +48,7 @@
 
         <div class="tarjeta">
 
-            <a href="/seccion/Bombillas" class="enlace-titulo"><h3>BOMBILLAS</h3></a>
+            <a href="/seccion/Bombillas" class="enlace-titulo efecto-verde"><h3>BOMBILLAS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Bombillas") | first %}
             <h4>{{ p.nombre }}</h4>
             <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
@@ -63,7 +63,7 @@
 
         <div class="tarjeta">
 
-            <a href="/seccion/Termos" class="enlace-titulo"><h3>TERMOS</h3></a>
+            <a href="/seccion/Termos" class="enlace-titulo efecto-verde"><h3>TERMOS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Termos") | first %}
             <h4>{{ p.nombre }}</h4>
             <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
@@ -78,14 +78,7 @@
     </div>
    
     <br><br>
-
-    <form>
-        <label>Dejanos tu opinión:</label><br>
-        <textarea rows="4" cols="25" placeholder="Ingrese su opinion"></textarea>
-        <br>
-        <button type="button">Enviar</button>
-    </form>
-    <br>
+    {% endblock %}
 </div>
 
 </body>

@@ -8,8 +8,10 @@
 <body>
 <div class="contenedor">
 
-    {% include 'base.html' %}
+    {% extends 'base.html' %}
 
+
+    {% block content %}
     <br><br><br>
     <div class="contenedor-padre2">
         {% for p in productos %}
@@ -36,6 +38,7 @@
     <a href="/">Volver al inicio</a> 
 
     <br>
+    {% endblock %}
 </div>
 </body>
 </html>
