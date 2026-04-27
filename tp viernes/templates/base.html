@@ -71,11 +71,10 @@
                 <h3>Mate Argento 2026</h3>
                 <p>&copy; Todos los derechos reservados.</p>
                 <p><em>Pasión por nuestra tradición.</em></p>
-                <form>
-                    <label>Dejanos tu opinión:</label><br>
-                    <textarea rows="4" cols="15" placeholder="Ingrese su opinion"></textarea>
-                    <br>
-                        <button type="button">Enviar</button>
+                <form action="/enviar_opinion" method="POST">
+                    <a href="/opiniones" class="enlace-titulo efecto-verde" style="color:#000"><h3>Ver Opiniones</h3></a>
+                    <textarea type="text" name="opinion_texto" placeholder="Deja tu opinion..." required></textarea>
+                        <button type="submit">Enviar</button>
                 </form>
             </div>
 

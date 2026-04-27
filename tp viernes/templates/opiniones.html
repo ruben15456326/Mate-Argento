@@ -1,0 +1,28 @@
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <title>Mate Argento - Reseñas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="contenedor">
+
+        {% extends 'base.html' %}
+        {% block content %}
+        <br><br><br>
+        <div class="contenedor-padre2">
+            {% for p in opiniones %}
+                <div class="tarjeta">
+                    <h4>{{ p.nombre_cliente }}</h4>
+                    <p><b>{{ p.comentario }}</b></p>
+                    {% if session.get('usuario_rol') == 'admin' %}
+                        <a href="/eliminar_opinion/{{ p.id }}" ...>Eliminar</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>No hay productos en esta categoría todavía.</p>
+            {% endfor %} {% endblock %}
+        </div>
+    </div>
+</body>

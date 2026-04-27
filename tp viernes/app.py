@@ -27,10 +27,58 @@ class Producto(db.Model):
     descripcion = db.Column(db.Text)
     imagen = db.Column(db.String(100)) # Aquí guardamos el nombre del archivo (ej: "mate.jpg")
 
+             #Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
+
+class Opinion(db.Model):
+    id = db.Column(db.Integer, primary_key=True) #Esto hace que el cerebro los vuelva unicos y los va colocando 1,2,3.
+    nombre_cliente = db.Column(db.String(100)) #Espacio para el nombre del cliente de maximo 100 letras.
+    comentario = db.Column(db.Text, nullable=False) # El texto que escriben, nullable para que no se guarde vacio.
+
 with app.app_context():
     db.create_all()
 
 # --- TUS RUTAS DE SIEMPRE (pero guardando en DB) ---
+
+               #Aca se guarda el nombre y la opinion que se sacaron de la sesion y de la opinion en el archivo.db
+@app.route('/enviar_opinion', methods=['POST'])
+def enviar_opinion():
+    # A. CAPTURA: Agarramos lo que el usuario escribió en el HTML
+    comentario_del_usuario = request.form.get('opinion_texto')
+    
+    # B. IDENTIDAD: Sacamos el nombre de la mochila (sesión) que vimos antes
+    nombre_del_usuario = session.get('usuario_nombre', 'Anónimo')
+
+    # C. CREACIÓN: Creamos "la ficha" con el modelo que diseñamos en el Paso 1
+    nueva_op = Opinion(nombre_cliente=nombre_del_usuario, comentario=comentario_del_usuario)
+
+    # D. GUARDADO: Metemos la ficha en la base de datos
+    db.session.add(nueva_op)  # Esto la deja en "espera"
+    db.session.commit()       # Esto es como darle a "Guardar" en el Word
+
+    return redirect(url_for('inicio'))
+
+@app.route('/opiniones')
+def ver_opiniones():
+    opiniones_db = Opinion.query.all() 
+    return render_template('opiniones.html', opiniones=opiniones_db)
+
+                                   #ELIMINAR OPINIONES
+                                   
+@app.route('/eliminar_opinion/<int:id>')
+def eliminar_opinion(id):
+    # SEGURIDAD: Solo el admin puede eliminar
+    if session.get('usuario_rol') != 'admin':
+        return "Acceso denegado", 403
+
+    # Buscamos el producto por su ID
+    opinion = Opinion.query.get(id)
+    
+    if opinion:
+        db.session.delete(opinion) # Lo marcamos para borrar
+        db.session.commit()         # Confirmamos el cambio en la DB
+    
+    return redirect('/') # Volvemos al inicio para ver los cambios
+
 
 @app.route('/')
 def inicio():
