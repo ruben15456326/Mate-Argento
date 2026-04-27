@@ -1,23 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
     <title>Mate Argento - Inicio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div style="background-color: #CADDEE !important; color: #000 !important; padding: 7px 0; width: 100%; border: none !important; border-left: none !important; outline: none !important; margin: 0 !important;">
+    <div style="background-color: #CADDEE !important; color: #000 !important; padding: 7px 0; width: 100%; margin: 0; border: none;">
         <marquee behavior="scroll" direction="left" scrollamount="8" style="font-weight: bold;">
-            🔥 15% OFF PAGANDO CON TRANSFERENCIA --- 🧉 ENVÍOS GRATIS EN COMPRAS MAYORES A $50.000 --- 🇦🇷 MATE ARGENTO: TRADICIÓN EN CADA CEBADA
+            🔥 15% OFF PAGANDO CON TRANSFERENCIA --- 🧉 ENVÍOS GRATIS EN COMPRAS MAYORES A $50.000 --- 🇦🇷 MATE ARGENTO
         </marquee>
     </div>
 
-
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="mensaje-push" id="notificacion">{{ messages[0] }}</div>
-            <script>setTimeout(() => document.getElementById('notificacion').remove(), 3000);</script>
+            <div class="mensaje-push" id="notificacion">
+                {{ messages[0] }}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const notify = document.getElementById('notificacion');
+                    if(notify) {
+                        notify.style.opacity = '0';
+                        setTimeout(() => notify.remove(), 500);
+                    }
+                }, 3000);
+            </script>
         {% endif %}
     {% endwith %}
 
@@ -27,8 +38,8 @@
         </a>
 
         <div class="buscador-corto">
-            <input type="text" placeholder="Buscar..." style="border:none; padding:5px; outline:none; width: 300px;">
-            <button>🔍</button>
+            <input type="text" placeholder="Buscar productos..." style="border:none; padding:5px; outline:none; width: 300px;">
+            <button type="button">🔍</button>
         </div>
 
         <div class="bloque-cuenta">
@@ -41,28 +52,52 @@
                     <a href="/logout">Cerrar Sesión</a>
                 </nav>
             {% else %}
-                <div class="icono-usuario">
-                    <i class="fa-regular fa-user"></i>
-                </div>
+                <div class="icono-usuario"><i class="fa-regular fa-user"></i></div>
                 <div class="enlaces-cuenta">
                     <a href="/login" class="link-cuenta">Iniciar sesión</a>
                     <a href="/registro" class="link-cuenta-secundario">Crear cuenta</a>
                 </div>
             {% endif %}
 
-            <details>
-                <summary>🛒 <b class="enlace-titulo">Mi Carrito (0)</b></summary>      
-                <p>Tu carrito está vacío</p>
-                <hr>
-                <button type="button">Ir a pagar</button>
+            <details class="carrito-desplegable">
+                <summary style="cursor: pointer; list-style: none;">
+                    🛒 <b class="enlace-titulo">Mi Carrito ({{ carrito_html|length }})</b>
+                </summary> 
+                
+                <div class="carrito-contenido">
+                    {% if carrito_html %}
+                        <div class="carrito-lista">
+                            {% for producto in carrito_html %}
+                                <div class="carrito-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="flex-grow: 1;">
+                                        <span>{{ producto.nombre }}</span>
+                                        <br>
+                                        <b>${{ "{:,.2f}".format(producto.precio) }}</b>
+                                    </div>
+                                    
+                                    <a href="/eliminar_del_carrito/{{ producto.id }}" class="btn-eliminar" title="Eliminar este producto">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+                        <p style="text-align: right; color: black; margin-bottom: 10px;">
+                            <strong>Total: ${{ "{:,.2f}".format(total_carrito) }}</strong>
+                        </p>
+                        <button type="button" class="btn-pagar">Ir a pagar</button>
+                    {% else %}
+                        <p style="color: #666; text-align: center; padding: 10px; margin: 0;">Tu carrito está vacío</p>
+                    {% endif %}
+                </div>
             </details>
         </div>
     </header>
     
-    <img src="{{ url_for('static', filename='img/fondo_lindo2.png') }}" class="ancho-total">
+    <img src="{{ url_for('static', filename='img/fondo_lindo2.png') }}" class="ancho-total" alt="Banner">
 
-    <main style="min-height: 80vh;">{% block content %}
-        {% endblock %}
+    <main style="min-height: 80vh; padding: 20px;">
+        {% block content %}{% endblock %}
     </main>
 
     <footer class="pie-pagina">
@@ -70,12 +105,11 @@
             <div class="tarjeta-pie">
                 <h3>Mate Argento 2026</h3>
                 <p>&copy; Todos los derechos reservados.</p>
-                <p><em>Pasión por nuestra tradición.</em></p>
                 <form>
                     <label>Dejanos tu opinión:</label><br>
-                    <textarea rows="4" cols="15" placeholder="Ingrese su opinion"></textarea>
+                    <textarea rows="4" style="width: 100%; border-radius: 5px; border: 1px solid #ccc;" placeholder="Ingrese su opinión"></textarea>
                     <br>
-                        <button type="button">Enviar</button>
+                    <button type="button" style="margin-top: 5px; cursor: pointer;">Enviar</button>
                 </form>
             </div>
 
@@ -84,26 +118,20 @@
                 <p>Inicio</p>
                 <p>Mates y Termos</p>
                 <p>Yerbas Especiales</p>
-                <p>Mi Cuenta</p>
             </div>
 
             <div class="tarjeta-pie">
                 <h3>Atención al Cliente</h3>
                 <p>Envíos a todo el país</p>
                 <p>Preguntas Frecuentes</p>
-                <p>Cambios y Devoluciones</p>
-                <p>Seguí tu pedido</p>
             </div>
 
             <div class="tarjeta-pie">
                 <h3>Contacto</h3>
                 <p>WhatsApp: +54 9 11 6501-6068</p>
-                <p>info@mateargento.com.ar</p>
                 <p>Instagram: @MateArgento_OK</p>
             </div>
         </div>
-
     </footer>
-
 </body>
 </html>
