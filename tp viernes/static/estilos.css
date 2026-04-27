@@ -55,7 +55,8 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 140px; /* Esto separa automáticamente los 3 elementos (logo, buscador, links) */
+    flex-wrap: wrap;    /* [NUEVO] Permite que los elementos bajen si no hay espacio *//* Esto separa automáticamente los 3 elementos (logo, buscador, links) */
+    gap: 10px;
     padding: 10px 20px;
 }
 
@@ -90,6 +91,9 @@ h3 {
     border-radius: 20px;
     border: 3px solid #ccc;
     overflow: hidden;
+    flex-grow: 1;       /* [NUEVO] Hace que el buscador use el espacio disponible */
+    max-width: 500px;   /* [NUEVO] Evita que se estire demasiado en pantallas gigantes */
+    min-width: 200px;   /* [NUEVO] Evita que se encoja tanto que no se pueda usar */
 }
 
 .buscador-corto button {
@@ -97,6 +101,16 @@ h3 {
     color: white;
     border: none;
     padding: 5px 10px;
+    flex-shrink: 0;
+    width: auto;
+        
+}
+.buscador-corto input {
+    flex-grow: 1;      /* [NUEVO] El input ahora es el encargado de absorber el espacio */
+    border: none;
+    padding: 5px 10px;
+    outline: none;
+    min-width: 0;      /* [TRUCO] Evita que el input rompa el contenedor en pantallas muy chicas */
 }
 /* Notificación Push Moderna */
 .mensaje-push {
@@ -125,6 +139,7 @@ h3 {
 .contenedor-padre {
     display: flex;             /* Activa el modo flexible */
     flex-direction: row;       /* Los pone en fila (horizontal) */
+    flex-wrap: wrap;
     justify-content: space-between; /* Deja espacio igual entre los 4 */
     align-items: center;       /* Los centra verticalmente */
     padding: 20px;
@@ -167,11 +182,11 @@ h3 {
 .bloque-cuenta {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center; 
     gap: 15px;
     font-family: 'Arial', sans-serif;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 
 .icono-usuario {
