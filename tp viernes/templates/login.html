@@ -7,31 +7,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
-<div class="contenedor">
-
-    {% include 'base.html' %}
-
     <div class="todo-centrado">
-    
-    <h2>Iniciar Sesión</h2>
-    
-    <form action="/login" method="POST">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="ejemplo@mail.com" required>
-        <br><br>
-        
-        <label for="pass">Contraseña:</label><br>
-        <input type="password" id="pass" name="password" placeholder="contraseña...">
-        <br><br>
-        
-        <button type="submit">Entrar</button>
-    </form>
-    
-    <br>
-    <p>¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
-    <br>
-</div>
+        <div class="tarjeta" style="background-color: #CADDEE; width: 420px; height: 440px ;">
 
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 120px; height: 120px;">
+            </a>
+    
+            <h2>Iniciar Sesión</h2>
+    
+            <form action="/login" method="POST">
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" placeholder="ejemplo@mail.com" required>
+                <br><br>
+                <label for="pass">Contraseña:</label><br>
+                <input type="password" id="pass" name="password" placeholder="contraseña...">
+                <br><br>
+                <button type="submit">Entrar</button>
+            </form>
+    
+            <br>
+            <p>¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
+            <br>
+        </div>
+    </div>
 </body>
 </html>

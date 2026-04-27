@@ -7,36 +7,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
-<div class="contenedor">
-
-    {% include 'base.html' %}
-
     <div class="todo-centrado">
-    
-    <h2>Registrarse</h2>
-    
-    <form action="/registrar_usuario" method="POST">
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" placeholder="Tu nombre" required>
-        <br><br>
+        <div class="tarjeta" style="background-color: #CADDEE; width: 420px; height: 480px ;">
 
-        <label>Email:</label><br>
-        <input type="email" name="email" placeholder="mail@ejemplo.com" required>
-        <br><br>
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 120px; height: 120px;">
+            </a>
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="password" required>
-        <br><br>
-
-        <button type="submit">Crear cuenta</button>
-    </form>
+            <h2>Registrarse</h2>
     
-    <br>
-    <p>¿Ya tenés cuenta? <a href="/login">Iniciá sesión acá</a></p>
-    <br>
+            <form action="/registrar_usuario" method="POST">
+                <label>Nombre:</label><br>
+                <input type="text" name="nombre" placeholder="Tu nombre" required>
+                <br><br>
+
+                <label>Email:</label><br>
+                <input type="email" name="email" placeholder="mail@ejemplo.com" required>
+                <br><br>
+
+                <label>Contraseña:</label><br>
+                <input type="password" name="password" required>
+                <br><br>
+
+                <button type="submit">Crear cuenta</button>
+            </form>
+            <br>
+            <p>¿Ya tenés cuenta? <a href="/login">Iniciá sesión acá</a></p>
+            <br>
+        </div>
     </div>
-</div>
-
 </body>
 </html>
