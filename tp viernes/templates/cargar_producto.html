@@ -26,8 +26,11 @@
                 <option value="Bombillas">Bombillas</option>
             </select><br><br>
 
-            <label>Nombre de la imagen (ej: mate.jpg):</label><br>
-            <input type="text" name="imagen"><br><br>
+            <label>Imagen del Producto:</label><br>
+            <input type="file" name="imagen" accept="image/*" required><br><br>
+
+            <label>Stock:</label><br>
+            <input type="number" name="stock" min="0"><br><br>
 
             <label>Descripción:</label><br>
             <textarea name="descripcion"></textarea><br><br>

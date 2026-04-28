@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request,url_for, session, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 import os
+from werkzeug.utils import secure_filename
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
@@ -26,6 +27,8 @@ class Producto(db.Model):
     precio = db.Column(db.Float, nullable=False) # Float para números con decimales
     descripcion = db.Column(db.Text)
     imagen = db.Column(db.String(100)) # Aquí guardamos el nombre del archivo (ej: "mate.jpg")
+    #Para el control de stock, agregamos esta columna nueva. Por ahora no se muestra en ningún lado, pero ya queda guardada para usarla después.
+    stock = db.Column(db.Integer, default=0)
 
              #Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
 
@@ -196,6 +199,9 @@ def registrar_usuario():
     return redirect(url_for('vista_login')) # <--- TE MANDA DIRECTO AL INICIO
 
 # NUEVA RUTA PARA CARGAR PRODUCTOS (SOLO PARA ADMIN)
+# Configuramos dónde se guardan las fotos
+FOLDER_FOTOS = os.path.join('static', 'img')
+app.config['UPLOAD_FOLDER'] = FOLDER_FOTOS
 
 @app.route('/admin/nuevo_producto', methods=['GET', 'POST'])
 def nuevo_producto():
@@ -207,10 +213,21 @@ def nuevo_producto():
         nombre = request.form.get('nombre')
         precio = float(request.form.get('precio'))
         categoria = request.form.get('categoria')
-        imagen = request.form.get('imagen') # Por ahora el nombre del archivo
-        descripcion = request.form.get('descripcion')
-
-        nuevo = Producto(nombre=nombre, precio=precio, categoria=categoria, imagen=imagen, descripcion=descripcion)
+        stock = int(request.form.get('stock', 0)) # Si no viene, asumimos 0
+        descripcion = request.form.get('descripcion')        
+        # --- LÓGICA PARA LA IMAGEN ---
+        file = request.files.get('imagen') # Cambiamos .form por .files
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            ruta_destino = os.path.join(app.root_path, 'static', 'img', filename)
+            file.save(ruta_destino)
+            nombre_imagen_db = filename
+        else:
+            nombre_imagen_db = "default.jpg" # Por si no suben nada
+        
+        
+        
+        nuevo = Producto(nombre=nombre, precio=precio, categoria=categoria, imagen=nombre_imagen_db, descripcion=descripcion, stock=stock)
         db.session.add(nuevo)
         db.session.commit()
         flash(f"¡Producto {nuevo.nombre}! agregado con exito.") # <--- El mensaje push
