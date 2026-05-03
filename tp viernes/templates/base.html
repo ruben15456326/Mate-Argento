@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div style="background-color: #13283A !important; color: #fff !important; padding: 7px 0; width: 100%; margin: 0; border: none;">
+    <!-- BARRA DE ANUNCIO -->
+    <div class="barra-anuncio" style="background-color: #13283A; color: #fff; padding: 7px 0; text-align: center;">
         <marquee behavior="scroll" direction="left" scrollamount="8" style="font-weight: bold;">
             🔥 15% OFF PAGANDO CON TRANSFERENCIA --- 🧉 ENVÍOS GRATIS EN COMPRAS MAYORES A $50.000 --- 🇦🇷 MATE ARGENTO
         </marquee>
     </div>
 
+    <!-- NOTIFICACIONES FLASH -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="mensaje-push" id="notificacion">
@@ -59,47 +61,66 @@
                 </div>
             {% endif %}
 
-            <details class="carrito-desplegable">
-                <summary style="cursor: pointer; list-style: none;">
-                    🛒 <b class="enlace-titulo">Mi Carrito ({{ carrito_html|length }})</b>
+            <!-- CARRITO DESPLEGABLE -->
+            <details class="carrito-desplegable" id="mi-carrito-desplegable">
+                <summary class="carrito-summary">
+                    🛒 <b class="enlace-titulo">Mi Carrito ({{ total_unidades }})</b>
                 </summary> 
                 
                 <div class="carrito-contenido">
                     {% if carrito_html %}
-                        <div class="carrito-lista">
-                            {% for producto in carrito_html %}
-                                <div class="carrito-item" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="flex-grow: 1;">
-                                        <span>{{ producto.nombre }}</span>
-                                        <br>
-                                        <b>${{ "{:,.2f}".format(producto.precio) }}</b>
-                                    </div>
-                                    
-                                    <a href="/eliminar_del_carrito/{{ producto.id }}" class="btn-eliminar" title="Eliminar este producto">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </a>
-                                </div>
-                            {% endfor %}
+                        <table class="tabla-carrito">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left;">PRODUCTO</th>
+                                    <th>CANT</th>
+                                    <th class="subtotal-col">SUBTOTAL</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in carrito_html %}
+                                    <tr class="fila-producto">
+                                        <td>{{ item.nombre }}</td>
+                                        <td>
+                                            <div class="controles-cantidad">
+                                                <a href="/restar_del_carrito/{{ item.id }}" class="btn-cantidad">-</a>
+                                                <span class="cantidad-numero">{{ item.cantidad }}</span>
+                                                <a href="/agregar_al_carrito/{{ item.id }}" class="btn-cantidad">+</a>
+                                            </div>
+                                        </td>
+                                        <td class="subtotal-col">${{ "{:,.2f}".format(item.subtotal) }}</td>
+                                        <td style="text-align: center;">
+                                            <a href="/eliminar_del_carrito/{{ item.id }}" title="Quitar todos">
+                                                <i class="fa-solid fa-trash-can icono-eliminar"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <div class="seccion-finalizar">
+                            <p class="total-texto">Total: ${{ "{:,.2f}".format(total_carrito) }}</p>
+                            <button type="button" class="btn-pagar-carrito">Finalizar Compra</button>
                         </div>
-                        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
-                        <p style="text-align: right; color: black; margin-bottom: 10px;">
-                            <strong>Total: ${{ "{:,.2f}".format(total_carrito) }}</strong>
-                        </p>
-                        <button type="button" class="btn-pagar">Ir a pagar</button>
                     {% else %}
-                        <p style="color: #666; text-align: center; padding: 10px; margin: 0;">Tu carrito está vacío</p>
+                        <p class="carrito-vacio">Tu carrito está vacío 🧉</p>
                     {% endif %}
                 </div>
             </details>
         </div>
     </header>
     
+    <!-- BANNER PRINCIPAL -->
     <img src="{{ url_for('static', filename='img/fondo_lindo2.png') }}" class="ancho-total" alt="Banner">
 
-    <main style="min-height: 80vh; padding: 20px;">
+    <!-- CONTENIDO DINÁMICO -->
+    <main class="contenedor-principal">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- PIE DE PÁGINA -->
     <footer class="pie-pagina">
         <div class="contenedor-pie">
             <div class="tarjeta-pie">
@@ -121,8 +142,8 @@
                 <p>Preguntas Frecuentes</p>
                 <form action="/enviar_opinion" method="POST">
                     <a href="/opiniones" class="enlace-titulo efecto-verde" style="color:#000"><h3>Ver Opiniones</h3></a>
-                    <textarea type="text" name="opinion_texto" placeholder="Deja tu opinion..." required></textarea>
-                        <button type="submit">Enviar</button>
+                    <textarea name="opinion_texto" placeholder="Deja tu opinion..." required></textarea>
+                    <button type="submit">Enviar</button>
                 </form>
             </div>
 
@@ -135,3 +156,23 @@
     </footer>
 </body>
 </html>
+
+<!// El siguiente script se encarga de recordar si el carrito estaba abierto o cerrado, incluso después>
+
+<script>
+    const carrito = document.getElementById('mi-carrito-desplegable');
+
+    // 1. Al cargar la página, verificamos si estaba abierto antes
+    if (localStorage.getItem('carritoAbierto') === 'true') {
+        carrito.setAttribute('open', '');
+    }
+
+    // 2. Escuchamos cuando el usuario abre o cierra el carrito
+    carrito.addEventListener('toggle', () => {
+        if (carrito.open) {
+            localStorage.setItem('carritoAbierto', 'true');
+        } else {
+            localStorage.setItem('carritoAbierto', 'false');
+        }
+    });
+</script>

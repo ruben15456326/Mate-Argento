@@ -207,6 +207,7 @@ h3 {
 .enlace-titulo {
     text-decoration: none; /* Saca el subrayado */
     color: #2c3e50;        /* Color elegante */
+    cursor: pointer;
 }
 
                                      /* BUSCADOR USADO EN LA BASE, CONTROLA TAMAÑO, COLORES */
@@ -374,4 +375,118 @@ footer {
 .btn-eliminar:hover {
     transform: scale(1.2);
     color: #c0392b;
+}
+
+
+/* --- ESTILOS DEL CARRITO DESPLEGABLE --- */
+.carrito-contenido {
+    min-width: 350px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    position: absolute;
+    right: 0;
+    z-index: 100;
+}
+
+.tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+    color: #333;
+}
+
+.tabla-carrito thead {
+    border-bottom: 2px solid #6E96B4;
+    font-size: 0.8em;
+}
+
+.tabla-carrito th, .tabla-carrito td {
+    padding: 10px 5px;
+}
+
+.fila-producto {
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+}
+
+/* Controles de cantidad (+/-) */
+.controles-cantidad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-cantidad {
+    text-decoration: none;
+    color: #6E96B4;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    padding: 0 6px;
+    border-radius: 3px;
+    background: #f9f9f9;
+    transition: background 0.2s;
+}
+
+.btn-cantidad:hover {
+    background: #eee;
+}
+
+.subtotal-col {
+    text-align: right;
+}
+
+/* Total y Botón Pagar */
+.seccion-finalizar {
+    margin-top: 15px;
+    text-align: right;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.total-texto {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.btn-pagar-carrito {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #13283A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-pagar-carrito:hover {
+    background-color: #1d3d58;
+}
+
+/* Quita la flecha por defecto en Chrome, Brave, Edge y Safari */
+.carrito-desplegable summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Quita la flecha en Firefox y otros navegadores */
+.carrito-summary {
+    display: flex; /* Ayuda a alinear el icono de carrito con el texto */
+    align-items: center;
+    list-style: none; /* Esta es la propiedad clave para Firefox */
+    cursor: pointer; /* Aprovechamos para poner la manito */
+}
+
+.icono-eliminar {
+    color: #e74c3c; /* Un rojo llamativo para indicar peligro/borrar */
+    cursor: pointer; /* Para que aparezca la manito */
+    transition: transform 0.2s; /* Para que el efecto de agrandarse sea suave */
+}
+
+.icono-eliminar:hover {
+    color: #c0392b; /* Un rojo más oscuro cuando pasas el mouse */
+    transform: scale(1.2); /* Se agranda un poquito, queda muy profesional */
 }

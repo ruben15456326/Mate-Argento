@@ -2,10 +2,38 @@ from flask import Flask, render_template, request,url_for, session, redirect, fl
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
+from functools import wraps
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
 app.secret_key = 'mi_llave_secreta_super_segura'
+
+# --- CONFIGURACIÓN DE ROLES Y NIVELES ---
+# Definimos el "poder" de cada rol. Cuanto más alto el número, más permisos.
+NIVELES_ACCESO = {
+    'cliente': 1,
+    'gestor': 5,
+    'admin': 10
+}
+
+def requiere_nivel(nivel_minimo):
+    """
+    Decorador para proteger rutas según el nivel de acceso.
+    Uso: @requiere_nivel(5) protegerá la ruta para gestores y admins.
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            rol_usuario = session.get('usuario_rol', 'cliente')
+            nivel_usuario = NIVELES_ACCESO.get(rol_usuario, 1)
+
+            if nivel_usuario < nivel_minimo:
+                flash("No tenés permisos suficientes para realizar esta acción.", "danger")
+                return redirect(url_for('inicio'))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 # Configuración mínima para que funcione la base de datos
 db_path = os.path.join(os.path.dirname(__file__), 'mate_argento.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
@@ -40,9 +68,71 @@ class Opinion(db.Model):
 with app.app_context():
     db.create_all()
 
-# --- TUS RUTAS DE SIEMPRE (pero guardando en DB) ---
+# CLASE PARA MANEJAR EL CARRITO DE COMPRAS (GUARDADO EN SESIÓN)
 
-               #Aca se guarda el nombre y la opinion que se sacaron de la sesion y de la opinion en el archivo.db
+class Carrito:
+    def __init__(self, session_flask):
+        self.session = session_flask
+        # Ahora inicializamos como un diccionario vacío si no existe
+        if 'carrito' not in self.session:
+            self.session['carrito'] = {} 
+
+    def agregar(self, producto_id):
+        # Convertimos el ID a string porque las claves de sesión en Flask deben ser texto
+        p_id = str(producto_id)
+        carrito = self.session.get('carrito', {})
+        
+        # Si ya está, sumamos 1. Si no, empezamos en 1.
+        if p_id in carrito:
+            carrito[p_id] += 1
+        else:
+            carrito[p_id] = 1
+            
+        self.session['carrito'] = carrito
+        self.session.modified = True
+
+    def quitar(self, producto_id):
+        p_id = str(producto_id)
+        carrito = self.session.get('carrito', {})
+        if p_id in carrito:
+            del carrito[p_id] # Borra toda la fila del producto
+            self.session['carrito'] = carrito
+            self.session.modified = True
+
+    def obtener_datos(self, modelo_producto):
+        carrito_dict = self.session.get('carrito', {})
+        productos_reales = []
+        total_general = 0
+        total_unidades = 0  # <--- Nueva variable
+        
+        for p_id, cantidad in carrito_dict.items():
+            p = modelo_producto.query.get(int(p_id))
+            if p:
+                subtotal = p.precio * cantidad
+                total_general += subtotal
+                total_unidades += cantidad  # <--- Sumamos las cantidades reales
+                # Creamos un objeto temporal para el HTML con la cantidad y subtotal
+                productos_reales.append({
+                    'id': p.id,
+                    'nombre': p.nombre,
+                    'precio': p.precio,
+                    'cantidad': cantidad,
+                    'subtotal': subtotal
+                })
+        return productos_reales, total_general, total_unidades
+
+    def restar(self, producto_id):
+        p_id = str(producto_id)
+        carrito = self.session.get('carrito', {})
+        if p_id in carrito:
+            carrito[p_id] -= 1
+            if carrito[p_id] <= 0:
+                del carrito[p_id] # Si llega a 0, eliminamos la fila
+            self.session['carrito'] = carrito
+            self.session.modified = True
+# --- TUS RUTAS ---
+
+#Aca se guarda el nombre y la opinion que se sacaron de la sesion y de la opinion en el archivo.db
 @app.route('/enviar_opinion', methods=['POST'])
 def enviar_opinion():
     # A. CAPTURA: Agarramos lo que el usuario escribió en el HTML
@@ -68,6 +158,7 @@ def ver_opiniones():
                                    #ELIMINAR OPINIONES
                                    
 @app.route('/eliminar_opinion/<int:id>')
+@requiere_nivel(5)
 def eliminar_opinion(id):
     # SEGURIDAD: Solo el admin puede eliminar
     if session.get('usuario_rol') != 'admin':
@@ -104,67 +195,56 @@ def vista_login():
             session['usuario_id'] = user.id
             session['usuario_nombre'] = user.nombre
             session['usuario_rol'] = user.rol
-            session['carrito'] = [] # Inicializamos el carrito vacío
             flash(f"¡Hola de nuevo, {user.nombre}!") 
             return redirect(url_for('inicio'))
         flash("Email o contraseña incorrectos")
         return redirect(url_for('vista_login'))
     return render_template('login.html')
 
-# RUTA PARA AGREGAR AL CARRITO (SOLO PARA USUARIOS LOGUEADOS)
-@app.route('/agregar_al_carrito/<int:id>')
-def agregar_al_carrito(id):
-    if 'usuario_nombre' not in session:
-        return redirect('/login') # Si no está logueado, al login
-
-    # Obtenemos el carrito actual de la sesión
-
-    carrito = list(session.get('carrito', []))
-    
-    # Agregamos el ID del producto
-    carrito.append(id)
-    
-    # Guardamos el carrito actualizado en la sesión
-    session['carrito'] = carrito
-    
-    # Marcamos la sesión como "modificada" para que Flask guarde los cambios
-    session.modified = True
-    producto = Producto.query.get(id)
-    # ENVIAMOS EL MENSAJE: (Texto, Categoría)
-    flash(f"¡{producto.nombre} se agregó al carrito!", "success")
-    # En vez de volver al inicio, volvemos al detalle de ese mismo producto
-    return redirect(f'/detalle/{id}') 
-# Carga los datos del carrito
+# Carga los datos del carrito en todas las páginas para mostrarlos en el menú
 @app.context_processor
 def procesar_carrito():
-    # 1. Obtenemos los IDs de la sesión
-    carrito_ids = session.get('carrito', [])
+    # Creamos el objeto carrito pasando la sesión actual
+    mi_carrito = Carrito(session)
     
-    productos_carrito = []
-    total = 0
+    # Obtenemos los items procesados (con cantidad y subtotal) y el total general
+    items, total, unidades = mi_carrito.obtener_datos(Producto)
     
-    # 2. Buscamos los datos reales de cada producto
-    if carrito_ids:
-        for p_id in carrito_ids:
-            p = Producto.query.get(p_id)
-            if p:
-                productos_carrito.append(p)
-                total += p.precio
-                
-    # 3. Retornamos las variables para que el HTML las vea
-    return dict(carrito_html=productos_carrito, total_carrito=total)
+    # Retornamos las variables que usará base.html
+    return dict(carrito_html=items, total_carrito=total, total_unidades=unidades)
+@app.route('/agregar_al_carrito/<int:id>')
+def agregar_al_carrito(id):
+    # Verificamos si el usuario está logueado (opcional, según tu lógica)
+    if 'usuario_nombre' not in session:
+        flash("Debes iniciar sesión para comprar", "warning")
+        return redirect('/login')
+
+    # Instanciamos la clase y agregamos
+    mi_carrito = Carrito(session)
+    mi_carrito.agregar(id)
+    
+    # Buscamos el nombre para el mensaje flash
+    producto = Producto.query.get(id)
+    if producto:
+        flash(f"¡{producto.nombre} agregado!", "success")
+    
+    # Redirigimos a la página anterior o al inicio
+    return redirect(request.referrer or '/')
+
 @app.route('/eliminar_del_carrito/<int:id>')
 def eliminar_del_carrito(id):
-    if 'carrito' in session:
-        carrito = list(session['carrito'])
-        if id in carrito:
-            carrito.remove(id) # Quita la primera coincidencia del ID
-            session['carrito'] = carrito
-            session.modified = True
-            flash("Producto eliminado del carrito", "info")
+    mi_carrito = Carrito(session)
+    mi_carrito.quitar(id)
     
-    # Redirigir a la página donde estaba el usuario
+    flash("Producto quitado del carrito", "info")
     return redirect(request.referrer or '/')
+
+@app.route('/restar_del_carrito/<int:id>')
+def restar_del_carrito(id):
+    mi_carrito = Carrito(session)
+    mi_carrito.restar(id)
+    return redirect(request.referrer or '/')
+
 # RUTA PARA CERRAR SESIÓN
 @app.route('/logout')
 def logout():
@@ -204,6 +284,7 @@ FOLDER_FOTOS = os.path.join('static', 'img')
 app.config['UPLOAD_FOLDER'] = FOLDER_FOTOS
 
 @app.route('/admin/nuevo_producto', methods=['GET', 'POST'])
+@requiere_nivel(5) # Entra el Gestor (5) y el Admin (10)
 def nuevo_producto():
     # VERIFICACIÓN DE SEGURIDAD
     if session.get('usuario_rol') != 'admin':
@@ -235,11 +316,10 @@ def nuevo_producto():
     # Si es GET, mostramos el formulario
     return render_template('cargar_producto.html')
 
-
 #Ruta para eliminar productos (SOLO ADMIN)
 
-
 @app.route('/eliminar_producto/<int:id>')
+@requiere_nivel(5)
 def eliminar_producto(id):
     # SEGURIDAD: Solo el admin puede eliminar
     if session.get('usuario_rol') != 'admin':
