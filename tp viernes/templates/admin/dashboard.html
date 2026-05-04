@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="contenedor-dashboard" style="padding: 40px 0; text-align: center;">
+    <h2 style="margin-bottom: 30px;">Centro de Mandos - Mate Argento</h2>
+    
+    <div class="grid-admin" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        
+        <!-- TARJETA: EQUIPO -->
+        <div class="tarjeta-admin" style="background: #f8f9fa; padding: 25px; border-radius: 10px; border: 2px solid #13283A; width: 250px;">
+            <i class="fa-solid fa-users-gear fa-3x" style="color: #13283A;"></i>
+            <h3>Usuarios</h3>
+            <p>Gestioná los permisos de tu equipo de trabajo.</p>
+            <a href="{{ url_for('lista_usuarios') }}" class="btn-admin-link" style="display: block; background: #13283A; color: white; padding: 10px; text-decoration: none; border-radius: 5px; margin-top: 10px;">Administrar</a>
+        </div>
+
+        <!-- TARJETA: INVENTARIO -->
+        <div class="tarjeta-admin" style="background: #f8f9fa; padding: 25px; border-radius: 10px; border: 2px solid #13283A; width: 250px;">
+            <i class="fa-solid fa-boxes-stacked fa-3x" style="color: #13283A;"></i>
+            <h3>Productos</h3>
+            <p>Cargá nuevos mates o editá el stock disponible.</p>
+            <a href="{{ url_for('nuevo_producto') }}" class="btn-admin-link" style="display: block; background: #13283A; color: white; padding: 10px; text-decoration: none; border-radius: 5px; margin-top: 10px;">Cargar Nuevo</a>
+        </div>
+
+        <!-- TARJETA: VENTAS (Próximamente) -->
+        <div class="tarjeta-admin" style="background: #e9ecef; padding: 25px; border-radius: 10px; border: 1px dashed #6c757d; width: 250px; opacity: 0.7;">
+            <i class="fa-solid fa-file-invoice-dollar fa-3x" style="color: #6c757d;"></i>
+            <h3>Ventas</h3>
+            <p>Próximamente: Visualizá tus reportes de facturación.</p>
+            <span style="color: #6c757d; font-weight: bold;">Bloqueado</span>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

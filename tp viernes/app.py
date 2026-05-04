@@ -372,5 +372,84 @@ def crear_admin():
     
     return "El admin ya existe."
 
+# RUTA PARA LISTAR USUARIOS (SOLO ADMIN)
+@app.route('/admin/usuarios')
+@requiere_nivel(10) # Solo el Administrador absoluto
+def lista_usuarios():
+    todos = Usuario.query.all()
+    return render_template('admin_usuarios.html', usuarios=todos)
+#  RUTA PARA CAMBIAR EL ROL DE UN USUARIO (SOLO ADMIN)
+@app.route('/admin/cambiar_rol/<int:id>/<nuevo_rol>')
+@requiere_nivel(10)
+def cambiar_rol(id, nuevo_rol):
+    user = Usuario.query.get(id)
+    if user:
+        user.rol = nuevo_rol
+        db.session.commit()
+        flash(f"Rol de {user.nombre} actualizado a {nuevo_rol}")
+    return redirect(url_for('lista_usuarios'))
+# RUTA PARA CREAR USUARIOS (SOLO ADMIN)
+@app.route('/admin/crear_usuario', methods=['GET', 'POST'])
+@requiere_nivel(10) # Solo el Admin (Dueño) puede usar esta ruta
+def admin_crear_usuario():
+    if request.method == 'POST':
+        # 1. Capturamos los datos del formulario
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        rol_elegido = request.form.get('rol') # El admin elige: admin, gestor o cliente
+
+        # 2. Validación de seguridad: Verificar si el email ya existe
+        usuario_existente = Usuario.query.filter_by(email=email).first()
+        if usuario_existente:
+            flash(f"Error: El email {email} ya está registrado.", "danger")
+            return redirect(url_for('admin_crear_usuario'))
+
+        # 3. Creación del nuevo objeto Usuario
+        nuevo_usuario = Usuario(
+            nombre=nombre,
+            email=email,
+            password=password, # Recordá que a futuro es mejor usar hash para seguridad
+            rol=rol_elegido
+        )
+
+        # 4. Guardado en la base de datos
+        try:
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            flash(f"¡Usuario {nombre} creado con éxito como {rol_elegido}!", "success")
+            return redirect(url_for('lista_usuarios'))
+        except Exception as e:
+            db.session.rollback()
+            flash("Ocurrió un error al guardar en la base de datos.", "danger")
+            return redirect(url_for('admin_crear_usuario'))
+
+    # Si es GET, simplemente mostramos el formulario
+    return render_template('admin_crear_usuario.html')
+# RUTA PARA ELIMINAR USUARIOS (SOLO ADMIN)
+@app.route('/admin/eliminar_usuario/<int:id>')
+@requiere_nivel(10)
+def eliminar_usuario(id):
+    user = Usuario.query.get(id)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f"Usuario {user.nombre} eliminado.")
+    return redirect(url_for('lista_usuarios'))
+# RUTA PARA VER EL PANEL DE CONTROL CON ESTADÍSTICAS (SOLO ADMIN)
+@app.route('/admin/dashboard')
+@requiere_nivel(10) # Solo el Administrador absoluto tiene acceso
+def dashboard():
+    # Contamos cuántos usuarios hay registrados en total
+    conteo_usuarios = Usuario.query.count()
+    
+    # Contamos cuántos productos hay en el catálogo
+    conteo_productos = Producto.query.count()
+    
+    # Renderizamos la plantilla pasando estos datos[cite: 1]
+    return render_template('admin/dashboard.html', 
+                           u_total=conteo_usuarios, 
+                           p_total=conteo_productos)
+
 if __name__ == '__main__':
     app.run(debug=True)

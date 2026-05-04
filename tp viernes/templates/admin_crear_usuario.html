@@ -1,0 +1,49 @@
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <title>Panel Admin - Crear Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="todo-centrado">
+        <!-- Reutilizamos tu clase "tarjeta" y el color de fondo para mantener la estética -->
+        <div class="tarjeta" style="background-color: #CADDEE; width: 420px; min-height: 520px; padding: 20px;">
+
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 100px; height: 100px;">
+            </a>
+
+            <h2>Nuevo Integrante</h2>
+            <p style="font-size: 0.9em; color: #555;">Alta de empleados y clientes</p>
+    
+            <!-- Importante: el action ahora apunta a la ruta de admin -->
+            <form action="/admin/crear_usuario" method="POST">
+                <label>Nombre Completo:</label><br>
+                <input type="text" name="nombre" placeholder="Nombre del usuario" required>
+                <br><br>
+
+                <label>Email Corporativo/Personal:</label><br>
+                <input type="email" name="email" placeholder="mail@ejemplo.com" required>
+                <br><br>
+
+                <label>Contraseña Temporal:</label><br>
+                <input type="password" name="password" placeholder="Asignar contraseña..." required>
+                <br><br>
+
+                <!-- El campo clave que diferencia esta vista del registro público -->
+                <label>Asignar Rol en el Sistema:</label><br>
+                <select name="rol" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <option value="cliente">Cliente (Usuario Final)</option>
+                    <option value="gestor">Gestor (Empleado - Stock)</option>
+                    <option value="admin">Administrador (Dueño)</option>
+                </select>
+                <br><br>
+
+                <button type="submit" style="background-color: #2c3e50; color: white;">Crear Usuario</button>
+            </form>
+            <br>
+            <p><a href="{{ url_for('lista_usuarios') }}"><i class="fa-solid fa-arrow-left"></i> Volver a la lista</a></p>
+        </div>
+    </div>
+</body>
