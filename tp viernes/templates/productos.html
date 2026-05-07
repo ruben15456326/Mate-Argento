@@ -2,17 +2,25 @@
 <html>
 <head>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
-    <title>Mate Argento - Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <title>Mate Argento - Productos</title> <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
 <div class="contenedor">
 
     {% extends 'base.html' %}
 
-
     {% block content %}
     <br><br><br>
+
+    {# --- MODIFICACIÓN 1: TÍTULO DE BÚSQUEDA --- #}
+    {# Si existe una búsqueda, mostramos qué se buscó. Si no, mostramos un título general #}
+    {% if busqueda %}
+        <h2 style="text-align: center;">Resultados para: "{{ busqueda }}"</h2>
+    {% else %}
+        <h2 style="text-align: center;">Nuestro Catálogo</h2>
+    {% endif %}
+    {# --- FIN MODIFICACIÓN 1 --- #}
+
     <div class="contenedor-padre3">
         {% for p in productos %}
             <div class="tarjeta">
@@ -20,17 +28,29 @@
                 <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
                 <p><b>${{ p.precio }}</b></p>
                 <a href="/detalle/{{ p.id }}">Ver detalle</a>
+                
                 <form action="/agregar_al_carrito/{{ p.id }}" method="GET">
                     <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
                         Comprar
                     </button>
                 </form>
+
                 {% if session.get('usuario_rol') == 'admin' %}
-                    <a href="/eliminar_producto/{{ p.id }}" ...>Eliminar</a>
+                    {# Se completó el enlace de eliminar que estaba con puntos suspensivos #}
+                    <a href="/eliminar_producto/{{ p.id }}" style="color: red; font-size: 12px; display: block; margin-top: 10px;">Eliminar</a>
                 {% endif %}
             </div>
         {% else %}
-            <p>No hay productos en esta categoría todavía.</p>
+            {# --- MODIFICACIÓN 2: MENSAJE PERSONALIZADO SI NO HAY RESULTADOS --- #}
+            {# Si la lista 'productos' llega vacía desde Flask, mostramos este mensaje #}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
+                {% if busqueda %}
+                    <p>No se encontraron productos que coincidan con "<b>{{ busqueda }}</b>".</p>
+                {% else %}
+                    <p>No hay productos disponibles en esta sección todavía.</p>
+                {% endif %}
+            </div>
+            {# --- FIN MODIFICACIÓN 2 --- #}
         {% endfor %}
     </div>
 

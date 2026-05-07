@@ -52,11 +52,29 @@ class Producto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(50))
-    precio = db.Column(db.Float, nullable=False) # Float para números con decimales
+    precio = db.Column(db.Float, nullable=False)
     descripcion = db.Column(db.Text)
-    imagen = db.Column(db.String(100)) # Aquí guardamos el nombre del archivo (ej: "mate.jpg")
-    #Para el control de stock, agregamos esta columna nueva. Por ahora no se muestra en ningún lado, pero ya queda guardada para usarla después.
+    imagen = db.Column(db.String(100))
     stock = db.Column(db.Integer, default=0)
+
+    @classmethod
+    def buscar(cls, consulta):
+        """
+        Este método busca productos que coincidan con la consulta
+        en el nombre o en la descripción.
+        """
+        # Convertimos la consulta a minúsculas para que no importe si escriben con Mayúsculas
+        termino = f"%{consulta}%"
+        
+        # Usamos el operador 'or_' para buscar en varios campos a la vez
+        return cls.query.filter(
+            (cls.nombre.ilike(termino)) | 
+            (cls.descripcion.ilike(termino))
+        ).all()
+
+    def __repr__(self):
+        """Muestra una representación legible del objeto en la consola."""
+        return f"<Producto: {self.nombre}>"
 
              #Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
 
@@ -131,6 +149,21 @@ class Carrito:
             self.session['carrito'] = carrito
             self.session.modified = True
 # --- TUS RUTAS ---
+
+# RUTA PARA BUSCAR PRODUCTOS DESDE EL FORMULARIO DE BÚSQUEDA
+@app.route('/buscar')
+def buscar():
+    query = request.args.get('q', '').strip()
+    
+    if query:
+        # Usamos el método de la Clase Producto (POO)
+        resultados = Producto.buscar(query)
+    else:
+        resultados = Producto.query.all()
+
+    # IMPORTANTE: Mandamos los resultados a 'productos.html' 
+    # porque ya tiene el bucle FOR preparado para mostrar muchos items
+    return render_template('productos.html', productos=resultados, busqueda=query)
 
 #Aca se guarda el nombre y la opinion que se sacaron de la sesion y de la opinion en el archivo.db
 @app.route('/enviar_opinion', methods=['POST'])

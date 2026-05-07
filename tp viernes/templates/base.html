@@ -39,10 +39,15 @@
             <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
         </a>
 
-        <div class="buscador-corto">
-            <input type="text" placeholder="Buscar productos..." style="border:none; padding:5px; outline:none; width: 300px;">
-            <button type="button">🔍</button>
-        </div>
+        <form action="{{ url_for('buscar') }}" method="GET">
+            <div class="buscador-corto">
+                <!-- Agregamos name="q" para que Flask pueda identificar el texto -->
+                <input type="text" name="q" placeholder="Buscar productos..." style="border:none; padding:5px; outline:none; width: 300px;">
+        
+                <!-- Cambiamos type="button" por "submit" para que el botón envíe el formulario -->
+                <button type="submit">🔍</button>
+            </div>
+        </form>
 
         <div class="bloque-cuenta">
             {% if session.get('usuario_nombre') %}
