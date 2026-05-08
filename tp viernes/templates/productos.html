@@ -1,25 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
-    <title>Mate Argento - Productos</title> <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
+{# 1. El contenedor debe ir AQUÍ adentro para que respete el diseño del base.html #}
 <div class="contenedor">
+    
+    {# 2. Espacio manual para que no pegue al banner superior #}
+    <br><br>
 
-    {% extends 'base.html' %}
-
-    {% block content %}
-    <br><br><br>
-
-    {# --- MODIFICACIÓN 1: TÍTULO DE BÚSQUEDA --- #}
-    {# Si existe una búsqueda, mostramos qué se buscó. Si no, mostramos un título general #}
+    {# --- TÍTULO DINÁMICO --- #}
     {% if busqueda %}
         <h2 style="text-align: center;">Resultados para: "{{ busqueda }}"</h2>
     {% else %}
         <h2 style="text-align: center;">Nuestro Catálogo</h2>
     {% endif %}
-    {# --- FIN MODIFICACIÓN 1 --- #}
 
     <div class="contenedor-padre3">
         {% for p in productos %}
@@ -36,29 +29,20 @@
                 </form>
 
                 {% if session.get('usuario_rol') == 'admin' %}
-                    {# Se completó el enlace de eliminar que estaba con puntos suspensivos #}
                     <a href="/eliminar_producto/{{ p.id }}" style="color: red; font-size: 12px; display: block; margin-top: 10px;">Eliminar</a>
                 {% endif %}
             </div>
         {% else %}
-            {# --- MODIFICACIÓN 2: MENSAJE PERSONALIZADO SI NO HAY RESULTADOS --- #}
-            {# Si la lista 'productos' llega vacía desde Flask, mostramos este mensaje #}
             <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
-                {% if busqueda %}
-                    <p>No se encontraron productos que coincidan con "<b>{{ busqueda }}</b>".</p>
-                {% else %}
-                    <p>No hay productos disponibles en esta sección todavía.</p>
-                {% endif %}
+                <p>No hay productos disponibles todavía.</p>
             </div>
-            {# --- FIN MODIFICACIÓN 2 --- #}
         {% endfor %}
     </div>
 
     <br><br>
-    <a href="/">Volver al inicio</a> 
+    <div style="text-align: center; padding-bottom: 20px;">
+        <a href="/">Volver al inicio</a>
+    </div>
 
-    <br>
-    {% endblock %}
-</div>
-</body>
-</html>
+</div> {# Cierre del div contenedor #}
+{% endblock %}

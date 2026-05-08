@@ -490,3 +490,35 @@ footer {
     color: #c0392b; /* Un rojo más oscuro cuando pasas el mouse */
     transform: scale(1.2); /* Se agranda un poquito, queda muy profesional */
 }
+
+/* --- ESTILOS PARA EL DASHBOARD DE ADMINISTRACIÓN --- */
+.grid-admin {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap; /* Permite que las tarjetas bajen a otra fila si no entran */
+}
+
+.tarjeta-admin {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #13283A;
+    width: 250px;
+    text-align: center;
+
+} 
+
+.fa-solid {
+
+    color: #13283A;
+}
+.btn-admin {
+  display: block;
+  background: #13283A;
+  color: white;
+  padding: 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  margin-top: 10px;
+}
