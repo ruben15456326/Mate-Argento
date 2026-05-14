@@ -1,182 +1,59 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
-    <title>Mate Argento - Inicio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <!-- BARRA DE ANUNCIO -->
-    <div class="barra-anuncio" style="background-color: #13283A; color: #fff; padding: 7px 0; text-align: center;">
-        <marquee behavior="scroll" direction="left" scrollamount="8" style="font-weight: bold;">
-            🔥 15% OFF PAGANDO CON TRANSFERENCIA --- 🧉 ENVÍOS GRATIS EN COMPRAS MAYORES A $50.000 --- 🇦🇷 MATE ARGENTO
-        </marquee>
+<div class="contenedor">
+{% extends "base.html" %}
+
+{% block content %}
+
+    <br><br>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <i class="fa-solid fa-users fa-3x" style="color: #13283A;"></i>
+        <h2 style="margin-top: 15px;">Integrantes Registrados</h2>
+        <p style="color: #555;">Lista de personal con acceso al sistema</p>
     </div>
 
-    <!-- NOTIFICACIONES FLASH -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="mensaje-push" id="notificacion">
-                {{ messages[0] }}
-            </div>
-            <script>
-                setTimeout(() => {
-                    const notify = document.getElementById('notificacion');
-                    if(notify) {
-                        notify.style.opacity = '0';
-                        setTimeout(() => notify.remove(), 500);
-                    }
-                }, 3000);
-            </script>
-        {% endif %}
-    {% endwith %}
+    <!-- Tabla de Usuarios -->
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background: white;">
+            <thead>
+                <tr style="background-color: #13283A; color: white; text-align: left;">
+                    <th style="padding: 12px; border: 1px solid #ddd;">Nombre</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Email</th>
+                    <th style="padding: 12px; border: 1px solid #ddd;">Rol</th>
+                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Aquí ocurre la magia: Jinja recorre la variable 'usuarios' que mandás desde Python #}
+                {% for u in usuarios %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px;">{{ u.nombre }}</td>
+                    <td style="padding: 12px;">{{ u.email }}</td>
+                    <td style="padding: 12px;">
+                        <span style="background: #e1f5fe; color: #01579b; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">
+                            {{ u.rol }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        <a href="#" title="Editar"><i class="fa-solid fa-pen-to-square" style="color: #13283A; margin-right: 10px;"></i></a>
+                        <a href="#" title="Eliminar"><i class="fa-solid fa-trash" style="color: #c0392b;"></i></a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 20px; text-align: center; color: #888;">
+                        No hay usuarios registrados en la base de datos.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <header class="bloque-superior">
-        <a href="/">
-            <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/admin/crear_usuario" class="btn-pagar-carrito" style="padding: 10px 20px; text-decoration: none;">
+            + AGREGAR NUEVO
         </a>
+    </div>
+    <br><br>
 
-        <div class="buscador-corto">
-            <input type="text" placeholder="Buscar productos..." style="border:none; padding:5px; outline:none; width: 300px;">
-            <button type="button">🔍</button>
-        </div>
-
-        <div class="bloque-cuenta">
-            {% if session.get('usuario_nombre') %}
-                <nav>
-                    <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
-                    {% if session.get('usuario_rol') == 'admin' %}
-                        <!-- Botón destacado para el administrador -->
-                        <!-- <a href="/admin/nuevo_producto" style="color: red; font-weight: bold;">[ PANEL CARGA ]</a> | -->
-                         <a href="/admin/dashboard" style="color: #e6222c; font-weight: bold; text-decoration: none;">
-                            <i class="fa-solid fa-gauge-high"></i> [ PANEL DE CONTROL ]
-                        </a> |
-                    {% endif %}
-                    <a href="/logout">Cerrar Sesión</a>
-                </nav>
-            {% else %}
-                <div class="icono-usuario"><i class="fa-regular fa-user"></i></div>
-                <div class="enlaces-cuenta">
-                    <a href="/login" class="link-cuenta">Iniciar sesión</a>
-                    <a href="/registro" class="link-cuenta-secundario">Crear cuenta</a>
-                </div>
-            {% endif %}
-
-            <!-- CARRITO DESPLEGABLE -->
-            <details class="carrito-desplegable" id="mi-carrito-desplegable">
-                <summary class="carrito-summary">
-                    🛒 <b class="enlace-titulo">Mi Carrito ({{ total_unidades }})</b>
-                </summary> 
-                
-                <div class="carrito-contenido">
-                    {% if carrito_html %}
-                        <table class="tabla-carrito">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left;">PRODUCTO</th>
-                                    <th>CANT</th>
-                                    <th class="subtotal-col">SUBTOTAL</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in carrito_html %}
-                                    <tr class="fila-producto">
-                                        <td>{{ item.nombre }}</td>
-                                        <td>
-                                            <div class="controles-cantidad">
-                                                <a href="/restar_del_carrito/{{ item.id }}" class="btn-cantidad">-</a>
-                                                <span class="cantidad-numero">{{ item.cantidad }}</span>
-                                                <a href="/agregar_al_carrito/{{ item.id }}" class="btn-cantidad">+</a>
-                                            </div>
-                                        </td>
-                                        <td class="subtotal-col">${{ "{:,.2f}".format(item.subtotal) }}</td>
-                                        <td style="text-align: center;">
-                                            <a href="/eliminar_del_carrito/{{ item.id }}" title="Quitar todos">
-                                                <i class="fa-solid fa-trash-can icono-eliminar"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        
-                        <div class="seccion-finalizar">
-                            <p class="total-texto">Total: ${{ "{:,.2f}".format(total_carrito) }}</p>
-                            <button type="button" class="btn-pagar-carrito">Finalizar Compra</button>
-                        </div>
-                    {% else %}
-                        <p class="carrito-vacio">Tu carrito está vacío 🧉</p>
-                    {% endif %}
-                </div>
-            </details>
-        </div>
-    </header>
-    
-    <!-- BANNER PRINCIPAL -->
-    <img src="{{ url_for('static', filename='img/fondo_lindo2.png') }}" class="ancho-total" alt="Banner">
-
-    <!-- CONTENIDO DINÁMICO -->
-    <main class="contenedor-principal">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- PIE DE PÁGINA -->
-    <footer class="pie-pagina">
-        <div class="contenedor-pie">
-            <div class="tarjeta-pie">
-                <h3>Mate Argento 2026</h3>
-                <p>&copy; Todos los derechos reservados.</p>
-                <p><em>Pasión por nuestra tradición.</em></p>
-            </div>
-
-            <div class="tarjeta-pie">
-                <h3>Secciones</h3>
-                <p>Inicio</p>
-                <p>Mates y Termos</p>
-                <p>Yerbas Especiales</p>
-            </div>
-
-            <div class="tarjeta-pie">
-                <h3>Atención al Cliente</h3>
-                <p>Envíos a todo el país</p>
-                <p>Preguntas Frecuentes</p>
-                <form action="/enviar_opinion" method="POST">
-                    <a href="/opiniones" class="enlace-titulo efecto-verde" style="color:#000"><h3>Ver Opiniones</h3></a>
-                    <textarea name="opinion_texto" placeholder="Deja tu opinion..." required></textarea>
-                    <button type="submit">Enviar</button>
-                </form>
-            </div>
-
-            <div class="tarjeta-pie">
-                <h3>Contacto</h3>
-                <p>WhatsApp: +54 9 11 6501-6068</p>
-                <p>Instagram: @MateArgento_OK</p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
-
-<!// El siguiente script se encarga de recordar si el carrito estaba abierto o cerrado, incluso después>
-
-<script>
-    const carrito = document.getElementById('mi-carrito-desplegable');
-
-    // 1. Al cargar la página, verificamos si estaba abierto antes
-    if (localStorage.getItem('carritoAbierto') === 'true') {
-        carrito.setAttribute('open', '');
-    }
-
-    // 2. Escuchamos cuando el usuario abre o cierra el carrito
-    carrito.addEventListener('toggle', () => {
-        if (carrito.open) {
-            localStorage.setItem('carritoAbierto', 'true');
-        } else {
-            localStorage.setItem('carritoAbierto', 'false');
-        }
-    });
-</script>
+{% endblock %}
+</div>
