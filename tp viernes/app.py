@@ -41,9 +41,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 db = SQLAlchemy(app)
 
 
-# ==============================================================================
-# 👤 CLASE USUARIO (Modelo de BD + Lógica de Negocio POO)
-# ==============================================================================
+
+#  CLASE USUARIO (Modelo de BD + Lógica de Negocio POO)
+
 class Usuario(db.Model):
     """
     Representa a los usuarios del sistema. Centraliza los procesos de 
@@ -55,6 +55,7 @@ class Usuario(db.Model):
     password = db.Column(db.String(100))
     # NUEVA COLUMNA:
     rol = db.Column(db.String(20), default='cliente')
+    activo = db.Column(db.Boolean, default=True) # <-- Asegurate de que esta línea exista
 
     @classmethod
     def registrar(cls, nombre, email, password, rol='cliente'):
@@ -68,7 +69,7 @@ class Usuario(db.Model):
             return None  # Si existe, frena la operación devolviendo None
         
         # SI NO EXISTE, recién ahí creamos el nuevo objeto
-        nuevo_usuario = cls(nombre=nombre, email=email, password=password, rol=rol)
+        nuevo_usuario = cls(nombre=nombre, email=email, password=password, rol=rol, activo=True)
         db.session.add(nuevo_usuario) # Lo agregamos
         db.session.commit()           # Guardamos de verdad
         return nuevo_usuario
@@ -96,11 +97,42 @@ class Usuario(db.Model):
         """
         db.session.delete(self)
         db.session.commit()
+    # --- NUEVOS MÉTODOS DE OBJETO ---
+
+    def alternar_estado_usuario(self):
+        """
+        Alterna de forma estricta el estado del usuario entre 1 (Activo) y 0 (Bloqueado).
+        Resuelve el problema de trabas en SQLite convirtiendo el valor a entero.
+        """
+        # Forzamos a Python a leer el valor actual como un número entero puro
+        estado_actual = int(self.activo) if self.activo is not None else 0
+
+        # Si está activo (1), lo clavamos en 0 (Bloqueado)
+        if estado_actual == 1:
+            self.activo = 0
+        else:
+            # Si está en 0 (o cualquier otra cosa), lo clavamos en 1 (Activo)
+            self.activo = 1
+            
+        # Guardamos el cambio físicamente en el archivo .db
+        db.session.commit()
+        
+        # Devolvemos el valor real que quedó guardado
+        return self.activo
+    
+    def actualizar_rol_usuario(self, nuevo_rol):
+        """Valida y actualiza el rol del usuario"""
+        roles_permitidos = ['cliente', 'gestor', 'admin']
+        if nuevo_rol in roles_permitidos:
+            self.rol = nuevo_rol
+            db.session.commit()
+            return True
+        return False
 
 
-# ==============================================================================
-# 🧉 CLASE PRODUCTO (Modelo de BD + Lógica de Catálogo POO)
-# ==============================================================================
+
+#  CLASE PRODUCTO (Modelo de BD + Lógica de Catálogo POO)
+
 # NUEVA TABLA PARA STOCK
 class Producto(db.Model):
     """
@@ -121,10 +153,7 @@ class Producto(db.Model):
         Este método busca productos que coincidan con la consulta
         en el nombre o en la descripción.
         """
-        # Convertimos la consulta a minúsculas para que no importe si escriben con Mayúsculas
         termino = f"%{consulta}%"
-        
-        # Usamos el operador 'or_' (representado por |) para buscar en varios campos a la vez
         return cls.query.filter(
             (cls.nombre.ilike(termino)) | 
             (cls.descripcion.ilike(termino))
@@ -132,31 +161,54 @@ class Producto(db.Model):
 
     @classmethod
     def guardar_nuevo(cls, datos_form, archivo_imagen):
-        """
-        Método de clase (POO). Desacopla la lógica de guardado de la ruta.
-        Procesa los campos de texto, evalúa la subida del archivo de imagen
-        utilizando secure_filename y guarda el Producto.
-        """
-        # --- LÓGICA PARA LA IMAGEN ---
+        
+        #Método de clase (POO). Desacopla la lógica de guardado de la ruta.
+        #Procesa los campos de texto, evalúa la subida del archivo de imagen
+        #utilizando secure_filename y guarda el Producto.
+        
         if archivo_imagen and archivo_imagen.filename != '':
             filename = secure_filename(archivo_imagen.filename)
             ruta_destino = os.path.join(app.root_path, 'static', 'img', filename)
             archivo_imagen.save(ruta_destino)
             nombre_imagen_db = filename
         else:
-            nombre_imagen_db = "default.jpg" # Por si no suben nada
+            nombre_imagen_db = "default.jpg"
 
         nuevo_prod = cls(
             nombre=datos_form.get('nombre'),
             precio=float(datos_form.get('precio')),
             categoria=datos_form.get('categoria'),
-            stock=int(datos_form.get('stock', 0)), # Si no viene, asumimos 0
+            stock=int(datos_form.get('stock', 0)),
             descripcion=datos_form.get('descripcion'),
             imagen=nombre_imagen_db
         )
         db.session.add(nuevo_prod)
         db.session.commit()
         return nuevo_prod
+
+    # 🔥 NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 🔥
+    def actualizar_datos(self, datos_form, archivo_imagen):
+        """
+        Método de instancia (POO). Permite al objeto modificarse a sí mismo
+        procesando los datos del formulario de edición.
+        Si se sube una nueva imagen, se guarda; si no, conserva la actual.
+        """
+        self.nombre = datos_form.get('nombre')
+        self.precio = float(datos_form.get('precio'))
+        self.categoria = datos_form.get('categoria')
+        self.stock = int(datos_form.get('stock', 0))
+        self.descripcion = datos_form.get('descripcion')
+
+        # Controlamos si el usuario subió un archivo de imagen nuevo
+        if archivo_imagen and archivo_imagen.filename != '':
+            filename = secure_filename(archivo_imagen.filename)
+            ruta_destino = os.path.join(app.root_path, 'static', 'img', filename)
+            archivo_imagen.save(ruta_destino)
+            self.imagen = filename  # Reemplazamos por la nueva foto
+
+        # Guardamos todos los cambios en la Base de Datos
+        db.session.commit()
+        return self
 
     def eliminar(self):
         """
@@ -171,9 +223,9 @@ class Producto(db.Model):
         return f"<Producto: {self.nombre}>"
 
 
-# ==============================================================================
-# 💬 CLASE OPINION (Modelo de BD + Lógica de Feedback POO)
-# ==============================================================================
+
+#  CLASE OPINION (Modelo de BD + Lógica de Feedback POO)
+
 # Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
 class Opinion(db.Model):
     """
@@ -207,26 +259,26 @@ with app.app_context():
     db.create_all()
 
 
-# ==============================================================================
-# 🛒 CLASE PARA MANEJAR EL CARRITO DE COMPRAS (GUARDADO EN SESIÓN)
-# ==============================================================================
+
+# CLASE PARA MANEJAR EL CARRITO DE COMPRAS (GUARDADO EN SESIÓN)
+
 class Carrito:
-    """
-    Clase de lógica pura de negocio. No persiste en la base de datos;
-    manipula un diccionario de datos serializado dentro de la sesión de Flask.
-    """
+    
+    # Clase de lógica pura de negocio. No persiste en la base de datos;
+    # manipula un diccionario de datos serializado dentro de la sesión de Flask.
+    
     def __init__(self, session_flask):
-        """
-        Constructor. Vincula la sesión activa e inicializa el contenedor 
-        del carrito si el cliente no posee uno.
-        """
+        
+       # Constructor. Vincula la sesión activa e inicializa el contenedor 
+       # del carrito si el cliente no posee uno.
+        
         self.session = session_flask
         # Ahora inicializamos como un diccionario vacío si no existe
         if 'carrito' not in self.session:
             self.session['carrito'] = {} 
 
     def agregar(self, producto_id):
-        """Suma un elemento al carrito o incrementa sus unidades."""
+        #Suma un elemento al carrito o incrementa sus unidades."""
         # Convertimos el ID a string porque las claves de sesión en Flask deben ser texto
         p_id = str(producto_id)
         carrito = self.session.get('carrito', {})
@@ -356,8 +408,9 @@ def vista_login():
             session['usuario_rol'] = user.rol
             flash(f"¡Hola de nuevo, {user.nombre}!") 
             return redirect(url_for('inicio'))
-        flash("Email o contraseña incorrectos")
-        return redirect(url_for('vista_login'))
+        else:
+            flash("Email o contraseña incorrectos")
+            return redirect(url_for('vista_login'))
     return render_template('login.html')
 
 
@@ -466,38 +519,101 @@ app.config['UPLOAD_FOLDER'] = FOLDER_FOTOS
 @app.route('/admin/nuevo_producto', methods=['GET', 'POST'])
 @requiere_nivel(5) # Entra el Gestor (5) y el Admin (10)
 def nuevo_producto():
-    # VERIFICACIÓN DE SEGURIDAD
-    if session.get('usuario_rol') != 'admin':
-        return "<h1>Acceso denegado. Solo administradores.</h1>", 403
-    
     if request.method == 'POST':
-        # La clase Producto procesa el request.form y request.files de forma interna
-        nuevo = Producto.guardar_nuevo(request.form, request.files.get('imagen'))
-        flash(f"¡Producto {nuevo.nombre}! agregado con exito.") # <--- El mensaje push
-        return redirect(url_for('inicio')) # <--- TE MANDA DIRECTO AL INICIO
+        # Seguimos usando tu método de clase excelente que desacopla la creación
+        Producto.guardar_nuevo(request.form, request.files.get('imagen'))
+        
+        flash("¡Nuevo producto agregado al catálogo con éxito!", "success")
+        return redirect(url_for('lista_productos'))
     
-    # Si es GET, mostramos el formulario de carga
     return render_template('cargar_producto.html')
 
+# 3. RUTA EXCLUSIVA PARA EDITAR UN PRODUCTO EXISTENTE
+
+@app.route('/admin/editar_producto/<int:id>', methods=['GET', 'POST'])
+@requiere_nivel(5)
+def editar_producto(id):
+    producto = Producto.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        # 🌟 ¡POO PURO! Le pasamos el formulario y el archivo; el objeto hace el resto
+        producto.actualizar_datos(request.form, request.files.get('imagen'))
+        
+        flash(f"¡Producto '{producto.nombre}' modificado con éxito!", "success")
+        return redirect(url_for('lista_productos'))
+        
+    # Si es GET, abrimos el formulario de edición pasándole el objeto
+    return render_template('editar_producto.html', producto=producto)
+
+# RUTA LISTADO GENERAL DE PRODUCTOS
+@app.route('/admin/productos')
+@requiere_nivel(5)  # Permite que entren tanto gestores (5) como administradores (10)
+def lista_productos():
+    todos_los_productos = Producto.query.all()
+    # Retornamos el HTML que creamos para listar los productos
+    return render_template('admin_productos.html', productos=todos_los_productos)
+
+
+# Ruta para Editar el Rol (SOLO PARA ADMIN)
+@app.route('/admin/editar_rol/<int:id>', methods=['GET', 'POST'])
+def editar_rol(id):
+    usuario = Usuario.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        nuevo_rol = request.form.get('rol')
+        
+        # Delegamos la validación y actualización al método del usuario
+        if usuario.actualizar_rol_usuario(nuevo_rol):
+            flash(f"Rol de {usuario.nombre} actualizado a {nuevo_rol} con éxito.", "success")
+            return redirect(url_for('lista_usuarios'))
+        else:
+            flash("Error: Rol no válido seleccionado.", "danger")
+            
+    return render_template('editar_usuario.html', usuario=usuario)
+
+# Ruta para Bloquear / Activar (SOLO PARA ADMIN)
+@app.route('/admin/alternar_estado/<int:id>', methods=['POST'])
+def alternar_estado(id):
+    usuario = Usuario.query.get_or_404(id)
+    
+    # Ejecuta el nuevo método estricto de arriba
+    esta_activo = usuario.alternar_estado_usuario()
+    
+    # Guardamos el nombre antes de limpiar la sesión
+    nombre_usuario = usuario.nombre
+    
+    # Limpieza total de la memoria de SQLAlchemy
+    db.session.expire_all()
+    db.session.remove()
+    
+    # Evaluamos el resultado del método (1 para activado, 0 para bloqueado)
+    if esta_activo == 1:
+        flash(f"¡El usuario {nombre_usuario} ahora está ACTIVADO!", "success")
+    else:
+        flash(f"¡El usuario {nombre_usuario} ha sido BLOQUEADO con éxito!", "danger")
+        
+    return redirect(url_for('lista_usuarios'))
 
 # Ruta para eliminar productos (SOLO ADMIN)
-@app.route('/eliminar_producto/<int:id>')
+@app.route('/admin/eliminar_producto/<int:id>')
 @requiere_nivel(5)
 def eliminar_producto(id):
-    # SEGURIDAD: Solo el admin puede eliminar
-    if session.get('usuario_rol') != 'admin':
-        return "Acceso denegado", 403
-
     producto = Producto.query.get_or_404(id)
-    producto.eliminar() # El objeto ejecuta su propio borrado de la base de datos
-    return redirect('/') # Volvemos al inicio para ver los cambios
+    
+    #  Invocamos el método de instancia que borra e impacta la BD
+    producto.eliminar()
+    
+    flash(f"Producto '{producto.nombre}' eliminado con éxito.", "success")
+    return redirect(url_for('lista_productos'))
 
 
 # RUTA PARA LISTAR USUARIOS (SOLO ADMIN)
 @app.route('/admin/usuarios')
 @requiere_nivel(10) # Solo el Administrador absoluto
 def lista_usuarios():
-    return render_template('admin_usuarios.html', usuarios=Usuario.query.all())
+    db.session.expire_all()
+    todos_los_usuarios = Usuario.query.all()    
+    return render_template('admin_usuarios.html', usuarios=todos_los_usuarios)
 
 
 # RUTA PARA CAMBIAR EL ROL DE UN USUARIO (SOLO ADMIN)

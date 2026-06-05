@@ -522,3 +522,212 @@ footer {
   border-radius: 5px;
   margin-top: 10px;
 }
+
+
+
+/* --- CLASES UNIFICADAS PARA EL PANEL DE ADMINISTRACIÓN --- */
+
+/* Cabeceras de sección centradas con íconos */
+.admin-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.admin-header h2 {
+    margin-top: 15px;
+    color: #13283A;
+    font-family: 'Georgia', serif; /* Manteniendo tu tipografía */
+}
+.admin-header p {
+    color: #555;
+    font-size: 0.95em;
+}
+
+/* Contenedor del botón de acción superior derecho (+ Agregar) */
+.admin-actions-top {
+    text-align: right;
+    margin-bottom: 20px;
+    padding-right: 10px;
+}
+
+/* Estructura general de las tablas administrativas */
+.admin-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.admin-tabla thead tr {
+    background-color: #13283A;
+    color: white;
+}
+
+.admin-tabla th, .admin-tabla td {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+}
+
+.admin-tabla tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+}
+
+.admin-tabla tbody tr:hover {
+    background-color: #f8f9fa; /* Efecto sutil al pasar el mouse */
+}
+
+/* Alineaciones para celdas específicas */
+.celda-centrada {
+    text-align: center;
+}
+
+/* Miniatura de las imágenes en las tablas */
+.admin-tabla-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* Etiquetas o estados (Badges) de color dinámicos */
+.badge-admin {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-activo {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-bloqueado {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Botones de acción rápidos dentro de las celdas */
+.btn-tabla {
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-tabla-editar {
+    background-color: #007bff;
+    color: white !important;
+}
+
+.btn-tabla-editar:hover {
+    background-color: #0056b3;
+}
+
+.btn-tabla-eliminar {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+.btn-tabla-eliminar:hover {
+    background-color: #bd2130;
+}
+
+/* --- CLASES UNIFICADAS PARA FORMULARIOS Y TARJETAS DE ACCESO --- */
+
+/* Contenedor tipo tarjeta adaptativa para formularios (Login, Registro, Carga) */
+.tarjeta-formulario {
+    background-color: #CADDEE; /* Mantiene tu color celeste de identidad */
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    text-align: center;
+    margin: 20px auto;
+}
+
+/* Títulos internos de los formularios */
+.tarjeta-formulario h2 {
+    margin: 10px 0 5px 0;
+    color: #13283A;
+    font-size: 24px;
+}
+
+/* Subtítulos o textos descriptivos cortos */
+.tarjeta-formulario .subtitulo-form {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Estilo unificado para las etiquetas (Labels) */
+.tarjeta-formulario label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    color: #13283A;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+/* Inputs, Selects y Textareas unificados */
+.tarjeta-formulario input[type="text"],
+.tarjeta-formulario input[type="email"],
+.tarjeta-formulario input[type="password"],
+.tarjeta-formulario input[type="number"],
+.tarjeta-formulario select,
+.tarjeta-formulario textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 0.95em;
+}
+
+/* Inputs específicos al enfocarse */
+.tarjeta-formulario input:focus,
+.tarjeta-formulario select:focus,
+.tarjeta-formulario textarea:focus {
+    border-color: #13283A;
+    outline: none;
+    box-shadow: 0 0 5px rgba(19, 40, 58, 0.3);
+}
+
+/* Ajuste para los textareas (descripción de productos) */
+.tarjeta-formulario textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Botón principal interno del formulario */
+.btn-formulario {
+    background-color: #13283A;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-formulario:hover {
+    background-color: #1d3d58;
+}

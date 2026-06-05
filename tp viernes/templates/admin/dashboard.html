@@ -23,13 +23,16 @@
             <p>Gestioná los permisos de tu equipo de trabajo.</p>
             <a href="{{ url_for('lista_usuarios') }}" class="btn-admin">Administrar</a>
         </div>
-
-        <!-- TARJETA: PRODUCTOS -->
+        <!-- TARJETA:  PRODUCTOS -->
         <div class="tarjeta-admin">
             <i class="fa-solid fa-boxes-stacked fa-3x"></i>
             <h3>Productos</h3>
-            <p>Cargá nuevos producto</p>
-            <a href="{{ url_for('nuevo_producto') }}" class="btn-admin">Cargar Nuevo</a>
+            <p>Monitoreá el stock, editá datos y subí nueva mercadería.</p>
+            
+            <a href="{{ url_for('lista_productos') }}" class="btn-admin" style="margin-bottom: 8px; display: block;">
+                 Administrar Existentes
+            </a>
+            
         </div>
 
         <!-- TARJETA: VENTAS -->

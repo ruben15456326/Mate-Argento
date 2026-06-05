@@ -6,6 +6,23 @@
 </head>
 
 <body>
+    <!-- NOTIFICACIONES FLASH -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="mensaje-push" id="notificacion">
+                {{ messages[0] }}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const notify = document.getElementById('notificacion');
+                    if(notify) {
+                        notify.style.opacity = '0';
+                        setTimeout(() => notify.remove(), 500);
+                    }
+                }, 3000);
+            </script>
+        {% endif %}
+    {% endwith %}
     <div class="todo-centrado">
         <div class="tarjeta" style="background-color: #CADDEE; width: 420px; height: 480px ;">
 

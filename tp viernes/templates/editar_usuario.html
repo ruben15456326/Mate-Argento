@@ -1,0 +1,46 @@
+<div class="contenedor">
+{% extends "base.html" %}
+
+{% block content %}
+
+    <br><br>
+    <div style="max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        
+        <div style="text-align: center; margin-bottom: 25px;">
+            <i class="fa-solid fa-user-gear fa-3x" style="color: #13283A;"></i>
+            <h2 style="margin-top: 15px;">Modificar Rol de Usuario</h2>
+            <p style="color: #555; font-size: 0.9em;">Cambiar permisos en el sistema</p>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #13283A;">
+            <p style="margin: 0; color: #333;"><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+            <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;"><strong>Email:</strong> {{ usuario.email }}</p>
+        </div>
+
+        <form action="/admin/editar_rol/{{ usuario.id }}" method="POST">
+            
+            <div style="margin-bottom: 30px;">
+                <label for="rol" style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Asignar Rol:</label>
+                <select id="rol" name="rol" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: white; box-sizing: border-box;">
+                    <option value="cliente" {% if usuario.rol == 'cliente' %}selected{% endif %}>Cliente (Usuario común)</option>
+                    <option value="gestor" {% if usuario.rol == 'gestor' %}selected{% endif %}>Gestor (Control de stock/productos)</option>
+                    <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador (Control total)</option>
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/admin/usuarios" style="color: #7f8c8d; text-decoration: none; font-size: 0.95em;">
+                    <i class="fa-solid fa-arrow-left"></i> Cancelar
+                </a>
+                
+                <button type="submit" class="btn-pagar-carrito" style="padding: 10px 25px; border: none; cursor: pointer; font-size: 0.95em;">
+                    GUARDAR ROL
+                </button>
+            </div>
+
+        </form>
+    </div>
+    <br><br>
+
+{% endblock %}
+</div>

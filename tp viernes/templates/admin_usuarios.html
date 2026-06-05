@@ -1,59 +1,72 @@
 <div class="contenedor">
-{% extends "base.html" %}
-
-{% block content %}
-
+    {% extends "base.html" %}
+    {% block content %}
     <br><br>
-    <div style="text-align: center; margin-bottom: 30px;">
-        <i class="fa-solid fa-users fa-3x" style="color: #13283A;"></i>
-        <h2 style="margin-top: 15px;">Integrantes Registrados</h2>
-        <p style="color: #555;">Lista de personal con acceso al sistema</p>
+    
+    <div class="admin-header">
+        <i class="fa-solid fa-users-gear fa-3x" style="color: #13283A;"></i>
+        <h2>Integrantes Registrados</h2>
+        <p>Lista de personal con acceso al sistema y gestión de permisos</p>
     </div>
 
-    <!-- Tabla de Usuarios -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; background: white;">
-            <thead>
-                <tr style="background-color: #13283A; color: white; text-align: left;">
-                    <th style="padding: 12px; border: 1px solid #ddd;">Nombre</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">Email</th>
-                    <th style="padding: 12px; border: 1px solid #ddd;">Rol</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {# Aquí ocurre la magia: Jinja recorre la variable 'usuarios' que mandás desde Python #}
-                {% for u in usuarios %}
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 12px;">{{ u.nombre }}</td>
-                    <td style="padding: 12px;">{{ u.email }}</td>
-                    <td style="padding: 12px;">
-                        <span style="background: #e1f5fe; color: #01579b; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">
-                            {{ u.rol }}
-                        </span>
-                    </td>
-                    <td style="padding: 12px; text-align: center;">
-                        <a href="#" title="Editar"><i class="fa-solid fa-pen-to-square" style="color: #13283A; margin-right: 10px;"></i></a>
-                        <a href="#" title="Eliminar"><i class="fa-solid fa-trash" style="color: #c0392b;"></i></a>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4" style="padding: 20px; text-align: center; color: #888;">
-                        No hay usuarios registrados en la base de datos.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table class="admin-tabla">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol de Acceso</th>
+                <th class="celda-centrada">Estado de Cuenta</th>
+                <th class="celda-centrada">Acciones de Gestión</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td style="font-weight: bold; color: #333;">{{ u.nombre }}</td>
+                <td style="color: #666;">{{ u.email }}</td>
+                <td>
+                    <span style="text-transform: capitalize; font-weight: 500;">{{ u.rol }}</span>
+                </td>
+                <td class="celda-centrada">
+                    <span class="badge-admin {% if u.activo|int == 1 %}badge-activo{% else %}badge-bloqueado{% endif %}">
+                        {% if u.activo|int == 1 %}Activo{% else %}Bloqueado{% endif %}
+                    </span>
+                </td>
+                <td class="celda-centrada">
+                    <a href="/admin/editar_rol/{{ u.id }}" class="btn-tabla btn-tabla-editar" style="background-color: #13283A;">
+                        ⚙️ Cambiar Permisos
+                    </a>
+                    
+                    <form action="/admin/alternar_estado/{{ u.id }}" method="POST" style="display:inline;" onclick="return confirm('¿Desea cambiar el estado de acceso de este usuario?');">
+                        <button type="submit" class="btn-tabla" style="background-color: #f39c12; color: white;">
+                            {% if u.activo|int == 1 %}🔒 Bloquear{% else %}🔓 Activar{% endif %}
+                        </button>
+                    </form>
+                    
+                    <a href="/admin/eliminar_usuario/{{ u.id }}" onclick="return confirm('¿Seguro que querés eliminar definitivamente a este usuario?');" class="btn-tabla btn-tabla-eliminar">
+                        🗑️ Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="celda-centrada" style="padding: 20px; color: #888;">
+                    No hay usuarios registrados en la base de datos.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <div style="text-align: center; margin-top: 30px;">
+    <div class="celda-centrada" style="margin-top: 30px; padding-bottom: 20px;">
         <a href="/admin/crear_usuario" class="btn-pagar-carrito" style="padding: 10px 20px; text-decoration: none;">
-            + AGREGAR NUEVO
+            + AGREGAR NUEVO USUARIO
+        </a>
+        <br><br><br>
+        <a href="{{ url_for('dashboard') }}" style="color: #13283A; text-decoration: none; font-weight: bold;">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Centro de Mandos
         </a>
     </div>
-    <br><br>
-
-{% endblock %}
+    <br>
+    {% endblock %}
 </div>
