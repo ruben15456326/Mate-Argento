@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
-{% block content %}
+
 <div class="contenedor">
+    {% extends 'base.html' %}
+{% block content %}
     <br><br>
     <div class="todo-centrado">
         <div class="tarjeta-formulario">
@@ -13,8 +14,14 @@
                 <label>Nombre del Producto:</label>
                 <input type="text" name="nombre" value="{{ producto.nombre }}" required>
 
-                <label>Precio ($):</label>
+                <label>Precio Venta ($):</label>
                 <input type="number" step="0.01" name="precio" value="{{ producto.precio }}" required>
+
+                <label>Precio Costo ($):</label>
+                <input type="number" step="0.01" name="precio_costo" value="{{ producto.precio_costo if producto.precio_costo else 0.0 }}" required>
+                <p style="color: #666; font-size: 0.75em; margin: -5px 0 10px 0; text-align: left; font-style: italic;">
+                    (Valor de compra al proveedor para calcular márgenes de ganancia)
+                </p>
 
                 <label>Categoría:</label>
                 <select name="categoria">
@@ -53,5 +60,5 @@
             </a> 
         </div>
     </div>
+    {% endblock %}
 </div>
-{% endblock %}

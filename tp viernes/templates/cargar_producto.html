@@ -1,20 +1,30 @@
-{% extends 'base.html' %}
-{% block content %}
+
 <div class="contenedor">
+    {% extends 'base.html' %}
+
+{% block content %}
     <br><br>
     <div class="todo-centrado">
+        
         <div class="tarjeta-formulario">
             
-            <i class="fa-solid fa-box-open fa-3x" style="color: #13283A; margin-bottom: 10px;"></i>
-            <h2>Cargar Producto</h2>
-            <p class="subtitulo-form">Carga de nuevos artículos al catálogo general</p>
+            <i class="fa-solid fa-boxes-stacked fa-3x" style="color: #13283A; margin-bottom: 10px;"></i>
+            <h2>Cargar Nuevo Producto</h2>
+            <p class="subtitulo-form">Ingresá los datos para dar de alta un artículo en el catálogo</p>
 
             <form method="POST" enctype="multipart/form-data">
+                
                 <label>Nombre del Producto:</label>
-                <input type="text" name="nombre" placeholder="Ej. Mate Camionero" required>
+                <input type="text" name="nombre" placeholder="Ej: Mate Torpedo Cincelado" required>
 
-                <label>Precio:</label>
-                <input type="number" step="0.01" name="precio" placeholder="0.00" required>
+                <label>Precio Venta ($):</label>
+                <input type="number" step="0.01" name="precio" placeholder="Ej: 4500.00" required>
+
+                <label>Precio Costo ($):</label>
+                <input type="number" step="0.01" name="precio_costo" placeholder="Ej: 2500.00" required>
+                <p style="color: #666; font-size: 0.75em; margin: -5px 0 10px 0; text-align: left; font-style: italic;">
+                    (Valor de compra al proveedor para calcular márgenes de ganancia)
+                </p>
 
                 <label>Categoría:</label>
                 <select name="categoria">
@@ -28,7 +38,7 @@
                 <input type="file" name="imagen" accept="image/*" required>
 
                 <label>Stock Inicial:</label>
-                <input type="number" name="stock" min="0" placeholder="Cantidad de unidades">
+                <input type="number" name="stock" min="0" value="0" required>
 
                 <label>Descripción:</label>
                 <textarea name="descripcion" placeholder="Detalles del producto..."></textarea>
@@ -38,9 +48,10 @@
             
             <br>
             <a href="{{ url_for('lista_productos') }}" style="text-decoration: none; color: #13283A; font-weight: bold;">
-                <i class="fa-solid fa-arrow-left"></i> Volver al Inventario
+                <i class="fa-solid fa-arrow-left"></i> Cancelar y volver
             </a> 
         </div>
+
     </div>
+    {% endblock %}
 </div>
-{% endblock %}

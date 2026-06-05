@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
+from datetime import datetime
 
 #comentario inicial para probar el git
 #hola
@@ -55,15 +56,15 @@ class Usuario(db.Model):
     password = db.Column(db.String(100))
     # NUEVA COLUMNA:
     rol = db.Column(db.String(20), default='cliente')
-    activo = db.Column(db.Boolean, default=True) # <-- Asegurate de que esta línea exista
+    activo = db.Column(db.Boolean, default=True) 
 
     @classmethod
     def registrar(cls, nombre, email, password, rol='cliente'):
-        """
-        Método de clase (POO) para dar de alta usuarios.
-        Valida que el email no esté repetido antes de persistir en la BD.
-        Retorna la instancia del usuario si tiene éxito, o None si el mail ya existe.
-        """
+       
+        #Método de clase (POO) para dar de alta usuarios.
+        #Valida que el email no esté repetido antes de persistir en la BD.
+        #Retorna la instancia del usuario si tiene éxito, o None si el mail ya existe.
+       
         # BUSCAMOS si ya existe alguien con ese email
         if cls.query.filter_by(email=email).first():
             return None  # Si existe, frena la operación devolviendo None
@@ -135,14 +136,15 @@ class Usuario(db.Model):
 
 # NUEVA TABLA PARA STOCK
 class Producto(db.Model):
-    """
-    Representa los artículos a la venta. Contiene la lógica de búsquedas 
-    y el procesamiento técnico de carga de nuevos productos e imágenes.
-    """
+    
+    #Representa los artículos a la venta. Contiene la lógica de búsquedas 
+    #y el procesamiento técnico de carga de nuevos productos e imágenes.
+    
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(50))
     precio = db.Column(db.Float, nullable=False)
+    precio_costo = db.Column(db.Float, nullable=False, default=0.0)#falta implementar
     descripcion = db.Column(db.Text)
     imagen = db.Column(db.String(100))
     stock = db.Column(db.Integer, default=0)
@@ -186,7 +188,7 @@ class Producto(db.Model):
         db.session.commit()
         return nuevo_prod
 
-    # 🔥 NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 🔥
+    #  NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 🔥
     def actualizar_datos(self, datos_form, archivo_imagen):
         """
         Método de instancia (POO). Permite al objeto modificarse a sí mismo
@@ -195,9 +197,11 @@ class Producto(db.Model):
         """
         self.nombre = datos_form.get('nombre')
         self.precio = float(datos_form.get('precio'))
+        self.precio_costo=float(datos_form.get('precio_costo'))
         self.categoria = datos_form.get('categoria')
         self.stock = int(datos_form.get('stock', 0))
         self.descripcion = datos_form.get('descripcion')
+        
 
         # Controlamos si el usuario subió un archivo de imagen nuevo
         if archivo_imagen and archivo_imagen.filename != '':
@@ -222,8 +226,78 @@ class Producto(db.Model):
         """Muestra una representación legible del objeto en la consola."""
         return f"<Producto: {self.nombre}>"
 
+# clase de ventas no implementada
+class Venta(db.Model):
+    __tablename__ = 'ventas'
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False) # Relación con tu usuario
+    fecha = db.Column(db.String(20), nullable=False, default=lambda: datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    total = db.Column(db.Float, nullable=False)
+    estado = db.Column(db.String(20), default='Completado')
+
+    # Relación inversa para sacar los renglones de la venta directo en Flask
+    detalles = db.relationship('DetalleVenta', backref='venta', lazy=True)
+
+    @classmethod
+    def registrar_desde_carrito(cls, usuario_id, items_compra):
+        
+        #LÓGICA POO: Valida stock, resta cantidades en los objetos de la DB,
+        #y guarda la cabecera y el detalle de la venta.
+        
+        if not items_compra:
+            raise ValueError("El carrito está vacío.")
+
+        total_venta = 0
+        renglones_a_guardar = []
+
+        # 1. Validaciones previas de negocio
+        for item in items_compra:
+            producto = item['producto']
+            cantidad = item['cantidad']
+
+            if producto.stock < cantidad:
+                raise ValueError(f"Stock insuficiente para: {producto.nombre} (Disponibles: {producto.stock})")
+
+            subtotal = producto.precio * cantidad
+            total_venta += subtotal
+
+            # Armamos la instancia del detalle (renglón)
+            nuevo_detalle = DetalleVenta(
+                producto_id=producto.id,
+                cantidad=cantidad,
+                precio_unitario=producto.precio
+            )
+            renglones_a_guardar.append((producto, cantidad, nuevo_detalle))
+
+        # 2. Si todo el stock es correcto, creamos la Venta
+        nueva_venta = cls(usuario_id=usuario_id, total=total_venta)
+        db.session.add(nueva_venta)
+        db.session.flush()  # Obtiene el ID de la venta de forma intermedia
+
+        # 3. Descontamos stock físico y asociamos los renglones
+        for producto, cantidad, detalle in renglones_a_guardar:
+            producto.stock -= cantidad  # Resta directa sobre el modelo Producto
+            detalle.venta_id = nueva_venta.id
+            db.session.add(detalle)
+
+        # 4. Impactamos los cambios de forma transaccional y masiva
+        db.session.commit()
+        return nueva_venta
 
 
+class DetalleVenta(db.Model):
+    __tablename__ = 'detalles_ventas'
+    id = db.Column(db.Integer, primary_key=True)
+    venta_id = db.Column(db.Integer, db.ForeignKey('ventas.id'), nullable=False)
+    producto_id = db.Column(db.Integer, db.ForeignKey('producto.id'), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+    precio_unitario = db.Column(db.Float, nullable=False)
+
+    # Relación para acceder a los datos del producto comprado (ej: detalle.producto.nombre)
+    producto = db.relationship('Producto')
+    
+    
+    
 #  CLASE OPINION (Modelo de BD + Lógica de Feedback POO)
 
 # Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
@@ -508,6 +582,55 @@ def restar_del_carrito(id):
     return redirect(request.referrer or '/')
 
 
+
+# RUTA PARA FNALIZAR LA COMPRA
+@app.route('/carrito/finalizar', methods=['POST'])
+def finalizar_compra():
+    # 1. Seguridad: Verificamos si hay un usuario logueado en la sesión
+    usuario_id = session.get('usuario_id')
+    if not usuario_id:
+        flash("Debés iniciar sesión para finalizar la compra.", "danger")
+        return redirect(url_for('inicio')) # O a tu ruta de login
+
+    # 2. Recuperamos el carrito de la sesión
+    # Ajustá 'carrito' por el nombre exacto que le diste en tu session
+    carrito_sesion = session.get('carrito', {})
+
+    if not carrito_sesion:
+        flash("Tu carrito está vacío.", "warning")
+        return redirect(url_for('inicio'))
+
+    # 3. Estructuramos los objetos trayéndolos desde la BD
+    items_compra = []
+    for prod_id, cantidad in carrito_sesion.items():
+        producto = Producto.query.get(int(prod_id))
+        if producto:
+            items_compra.append({
+                'producto': producto,
+                'cantidad': int(cantidad)
+            })
+
+    # 4. Ejecutamos el motor de compras
+    try:
+        # Invocamos la lógica rica de POO
+        nueva_venta = Venta.registrar_desde_carrito(
+            usuario_id=usuario_id, 
+            items_compra=items_compra
+        )
+        
+        # 5. Éxito: Limpiamos el carrito de la sesión para que quede en 0
+        session['carrito'] = {}
+        session.modified = True # Le avisa a Flask que la sesión cambió
+        
+        flash(f"🛒 ¡Compra registrada con éxito! Pedido N° {nueva_venta.id}.", "success")
+        return redirect(url_for('inicio'))
+
+    except ValueError as e:
+        # Si falló el stock, atrapamos el mensaje y lo mandamos a la pantalla
+        flash(str(e), "danger")
+        return redirect(url_for('inicio')) # O a la vista del carrito
+
+
 # ==============================================================================
 # 🛠️ PANEL DE CONTROL Y ADMINISTRACIÓN (SOLO ADMIN / ROL REQUERIDO)
 # ==============================================================================
@@ -536,7 +659,7 @@ def editar_producto(id):
     producto = Producto.query.get_or_404(id)
     
     if request.method == 'POST':
-        # 🌟 ¡POO PURO! Le pasamos el formulario y el archivo; el objeto hace el resto
+        #Le pasamos el formulario y el archivo; el objeto hace el resto
         producto.actualizar_datos(request.form, request.files.get('imagen'))
         
         flash(f"¡Producto '{producto.nombre}' modificado con éxito!", "success")
@@ -556,6 +679,7 @@ def lista_productos():
 
 # Ruta para Editar el Rol (SOLO PARA ADMIN)
 @app.route('/admin/editar_rol/<int:id>', methods=['GET', 'POST'])
+@requiere_nivel(10)
 def editar_rol(id):
     usuario = Usuario.query.get_or_404(id)
     
@@ -573,6 +697,7 @@ def editar_rol(id):
 
 # Ruta para Bloquear / Activar (SOLO PARA ADMIN)
 @app.route('/admin/alternar_estado/<int:id>', methods=['POST'])
+@requiere_nivel(10)
 def alternar_estado(id):
     usuario = Usuario.query.get_or_404(id)
     
@@ -606,6 +731,42 @@ def eliminar_producto(id):
     flash(f"Producto '{producto.nombre}' eliminado con éxito.", "success")
     return redirect(url_for('lista_productos'))
 
+# RUTA PARA AUDITAR Y VER LAS VENTAS DE LA TIENDA (SOLO ADMIN)
+@app.route('/admin/ventas')
+@requiere_nivel(10) # Al igual que el dashboard, solo entra el Admin absoluto
+def lista_ventas():
+    # 1. Traemos todas las ventas ordenadas desde la más nueva a la más vieja
+    ventas_totales = Venta.query.order_by(Venta.id.desc()).all()
+
+    # 2. Inicializamos los contadores para las métricas de negocio
+    ingresos_brutos = 0.0
+    costos_totales = 0.0
+    ganancia_neta = 0.0
+
+    # 3. Barremos las ventas y sus detalles calculando los márgenes reales
+    for v in ventas_totales:
+        ingresos_brutos += v.total
+        
+        # Recorremos cada renglón de cada venta
+        for detalle in v.detalles:
+            # Buscamos el precio al que compramos el producto al proveedor
+            # Usamos un short-if por si algún producto viejo quedó en Null
+            costo_unitario = detalle.producto.precio_costo if detalle.producto.precio_costo else 0.0
+            
+            # Costo total del renglón = costo de proveedor * cantidad que llevó el cliente
+            costos_totales += (costo_unitario * detalle.cantidad)
+
+    # La ganancia real es la facturación menos lo que nos costó la mercadería
+    ganancia_neta = ingresos_brutos - costos_totales
+
+    # 4. Renderizamos la plantilla pasándole los datos y las métricas formateadas
+    return render_template(
+        'admin_ventas.html',
+        ventas=ventas_totales,
+        ingresos=ingresos_brutos,
+        ganancia=ganancia_neta,
+        cantidad_pedidos=len(ventas_totales)
+    )
 
 # RUTA PARA LISTAR USUARIOS (SOLO ADMIN)
 @app.route('/admin/usuarios')

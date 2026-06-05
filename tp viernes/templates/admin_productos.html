@@ -21,7 +21,8 @@
                 <th>Foto</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
-                <th>Precio</th>
+                <th>Precio Costo</th>
+                 <th>Precio Venta</th>
                 <th>Stock</th>
                 <th class="celda-centrada">Acciones</th>
             </tr>
@@ -34,6 +35,11 @@
                 </td>
                 <td style="font-weight: bold; color: #333;">{{ p.nombre }}</td>
                 <td style="color: #666;">{{ p.categoria }}</td>
+                
+                <td style="color: #6f42c1; font-weight: bold;">
+                    ${{ "%.2f"|format(p.precio_costo if p.precio_costo else 0.0) }}
+                </td>
+                
                 <td style="color: #28a745; font-weight: bold;">${{ "%.2f"|format(p.precio) }}</td>
                 <td>
                     <span class="badge-admin {% if p.stock > 0 %}badge-activo{% else %}badge-bloqueado{% endif %}">

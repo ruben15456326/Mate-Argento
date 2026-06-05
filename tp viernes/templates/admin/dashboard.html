@@ -36,11 +36,13 @@
         </div>
 
         <!-- TARJETA: VENTAS -->
-        <div class="tarjeta-admin" style="background: #e9ecef; opacity: 0.7; border: 1px dashed #6c757d;">
+        <div class="tarjeta-admin" >
             <i class="fa-solid fa-file-invoice-dollar fa-3x"></i>
             <h3>Ventas</h3>
-            <p>Próximamente: Facturación.</p>
-            <span style="color: #6c757d; font-weight: bold;">Bloqueado</span>
+            <p>Auditoría de transacciones en tiempo real</p>
+            <a href="{{ url_for('lista_ventas') }}" class="btn-admin" style="margin-bottom: 8px; display: block;">
+                Facturación
+            </a>
         </div>
 
     </div>
