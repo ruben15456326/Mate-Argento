@@ -20,15 +20,10 @@
             <a href="/seccion/Yerbas" class="enlace-titulo efecto-verde"><h3>YERBAS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Yerbas") | first %}
             <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <a href="/detalle/{{ p.id }}">
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+            </a>
             <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" 
-                    style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
-                    onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-            {% endif %}
         </div>
 
         <div class="tarjeta">
@@ -36,14 +31,10 @@
             <a href="/seccion/Mates" class="enlace-titulo efecto-verde"><h3>MATES</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Mates") | first %}
             <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <a href="/detalle/{{ p.id }}">
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+            </a>
             <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
-
         </div>
 
         <div class="tarjeta">
@@ -51,14 +42,10 @@
             <a href="/seccion/Bombillas" class="enlace-titulo efecto-verde"><h3>BOMBILLAS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Bombillas") | first %}
             <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <a href="/detalle/{{ p.id }}">
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+            </a>
             <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
-
         </div>
 
         <div class="tarjeta">
@@ -66,13 +53,10 @@
             <a href="/seccion/Termos" class="enlace-titulo efecto-verde"><h3>TERMOS</h3></a>
             {% set p = productos | selectattr("categoria", "equalto", "Termos") | first %}
             <h4>{{ p.nombre }}</h4>
-            <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+            <a href="/detalle/{{ p.id }}">
+                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+            </a>
             <p><b>${{ p.precio }}</b></p>
-            <a href="/detalle/{{ p.id }}">Ver detalle</a>
-            {% if session.get('usuario_rol') == 'admin' %}
-                <br><br>
-                <a href="/eliminar_producto/{{ p.id }}" style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;">Eliminar</a>
-            {% endif %}
         </div>
 
     </div>

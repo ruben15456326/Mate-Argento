@@ -20,13 +20,21 @@
 
         <p>Categoría: <i>{{ producto.categoria }}</i></p>
         <p>{{ producto.descripcion }}</p>
-
+        <p><b>${{ producto.precio }}</b></p>
         <form action="/agregar_al_carrito/{{ producto.id }}" method="GET">
             <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
                 Comprar
             </button>
         </form>
-
+            {% if session.get('usuario_rol') == 'admin' %}
+                <br><br>
+                <a href="/eliminar_producto/{{ producto.id }}" 
+                    style="color: white; background-color: red; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 12px;"
+                    onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                <br>
+                <a href="{{ url_for('editar_producto', id=producto.id) }}"
+                    style="color: white; background-color: blue; padding: 5px; text-decoration: none; border-radius: 5px; font-size: 15px;"">Editar</a>
+            {% endif %}                
 
         <br>
     </div>    

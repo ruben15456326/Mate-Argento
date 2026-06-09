@@ -2,10 +2,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{# 1. El contenedor debe ir AQUÍ adentro para que respete el diseño del base.html #}
-
-    
-    {# 2. Espacio manual para que no pegue al banner superior #}
     <br><br>
 
     {# --- TÍTULO DINÁMICO --- #}
@@ -19,19 +15,15 @@
         {% for p in productos %}
             <div class="tarjeta">
                 <h4>{{ p.nombre }}</h4>
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" style="width: 200px;">
+                <a href="/detalle/{{ p.id }}">
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+                </a>
                 <p><b>${{ p.precio }}</b></p>
-                <a href="/detalle/{{ p.id }}">Ver detalle</a>
-                
                 <form action="/agregar_al_carrito/{{ p.id }}" method="GET">
                     <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
                         Comprar
                     </button>
                 </form>
-
-                {% if session.get('usuario_rol') == 'admin' %}
-                    <a href="/eliminar_producto/{{ p.id }}" style="color: red; font-size: 12px; display: block; margin-top: 10px;">Eliminar</a>
-                {% endif %}
             </div>
         {% else %}
             <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">

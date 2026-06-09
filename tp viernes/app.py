@@ -78,6 +78,32 @@ class Producto(db.Model):
 
              #Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
 
+    @app.route('/admin/editar/<int:id>', methods=['GET', 'POST'])
+    def editar_producto(id):
+        # Buscamos el producto por ID (no usa classmethod porque SQLAlchemy ya busca por la clave primaria)
+        producto = Producto.query.get_or_404(id) 
+
+        if request.method == 'POST':
+            # Tomamos los datos del formulario y los asignamos directo al objeto
+            producto.nombre = request.form['nombre']
+            producto.categoria = request.form['categoria']
+            producto.precio = float(request.form['precio'])
+            producto.descripcion = request.form['descripcion']
+            producto.stock = int(request.form['stock'])
+        
+            # Manejo de la foto por si sube una nueva
+            foto = request.files.get('imagen')
+            if foto and foto.filename != '':
+                producto.imagen = foto.filename
+                foto.save(f"static/img/{foto.filename}")
+
+            # Guardamos los cambios de este producto en la base de datos
+            db.session.commit()
+        
+            return redirect(url_for('inicio'))
+
+        return render_template('editar.html', producto=producto)
+
 class Opinion(db.Model):
     id = db.Column(db.Integer, primary_key=True) #Esto hace que el cerebro los vuelva unicos y los va colocando 1,2,3.
     nombre_cliente = db.Column(db.String(100)) #Espacio para el nombre del cliente de maximo 100 letras.

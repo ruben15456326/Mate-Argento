@@ -1,0 +1,51 @@
+<head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <title>Mate Argento - Editar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="contenedor">
+
+    {% extends 'base.html' %}
+    {% block content %}
+
+    <div class="todo-centrado">
+
+
+        <h1>Editar Producto: {{ producto.nombre }}</h1>
+        <form action="{{ url_for('editar_producto', id=producto.id) }}" method="POST" enctype="multipart/form-data">
+            <label for="nombre">Nombre del Producto:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ producto.nombre }}" required>
+            <br><br>
+
+            <label for="categoria">Categoría:</label>
+            <input type="text" id="categoria" name="categoria" value="{{ producto.categoria }}">
+            <br><br>
+
+            <label for="precio">Precio ($):</label>
+            <input type="number" id="precio" name="precio" step="0.01" value="{{ producto.precio }}" required>
+            <br><br>
+
+            <label for="stock">Stock:</label>
+            <input type="number" id="stock" name="stock" value="{{ producto.stock }}" required>
+            <br><br>
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="4">{{ producto.descripcion }}</textarea>
+            <br><br>
+
+            <label for="imagen">Nueva Imagen (opcional):</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*">
+            <p style="font-size: 0.9em; color: gray;">Imagen actual: {{ producto.imagen }}</p>
+            <br>
+
+            <button type="submit">Guardar Cambios</button>
+            <a href="{{ url_for('inicio') }}">Cancelar</a>
+        </form>
+    </div>    
+    {% endblock %}
+</div>
+</body>
+</html>
