@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, url_for, session, redirect, f
 from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
-from functools import wraps
 from itsdangerous import URLSafeTimedSerializer
-from flask_mail import Mail, Message
-from flask import url_for
+from flask_mail import Mail
+from functools import wraps
+from datetime import datetime
 
 #comentario inicial para probar el git
 #hola
@@ -85,10 +85,6 @@ class Usuario(db.Model):
     
     @classmethod
     def autenticar(cls, email, password):
-        """
-        Método de clase (POO) para el Login.
-        Busca en la DB la coincidencia exacta de email y contraseña.
-        """
         return cls.query.filter_by(email=email, password=password).first()
 
     def actualizar_rol(self, nuevo_rol):

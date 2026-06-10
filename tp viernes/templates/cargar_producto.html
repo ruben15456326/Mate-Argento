@@ -1,58 +1,57 @@
-<head>
-    <title>Panel de Admin - Cargar Producto</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-</head>
-<body>
-    <div class="contenedor">
 
-        {% extends 'base.html' %}
-        {% block content %}
+<div class="contenedor">
+    {% extends 'base.html' %}
 
-        <div class="todo-centrado">
+{% block content %}
+    <br><br>
+    <div class="todo-centrado">
+        
+        <div class="tarjeta-formulario">
+            
+            <i class="fa-solid fa-boxes-stacked fa-3x" style="color: #13283A; margin-bottom: 10px;"></i>
+            <h2>Cargar Nuevo Producto</h2>
+            <p class="subtitulo-form">Ingresá los datos para dar de alta un artículo en el catálogo</p>
 
-        <h2>Cargar Nuevo Producto</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <label>Nombre del Producto:</label><br>
-            <input type="text" name="nombre" required><br><br>
+            <form method="POST" enctype="multipart/form-data">
+                
+                <label>Nombre del Producto:</label>
+                <input type="text" name="nombre" placeholder="Ej: Mate Torpedo Cincelado" required>
 
-            <label>Precio:</label><br>
-            <input type="number" step="0.01" name="precio" required><br><br>
+                <label>Precio Venta ($):</label>
+                <input type="number" step="0.01" name="precio" placeholder="Ej: 4500.00" required>
 
-            <label>Categoría:</label><br>
-            <select name="categoria">
-                <option value="" disabled selected>-- Seleccione una categoría --</option>
-    
-                {# Recorremos las categorías dinámicas de la base de datos #}
-                {% for cat in categorias %}
-                    <option value="{{ cat }}">{{ cat }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-
-            <div style="border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 10px;">
-                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: #555;">
-                    <i>¿La categoría que buscás no está en la lista? Creala acá:</i>
+                <label>Precio Costo ($):</label>
+                <input type="number" step="0.01" name="precio_costo" placeholder="Ej: 2500.00" required>
+                <p style="color: #666; font-size: 0.75em; margin: -5px 0 10px 0; text-align: left; font-style: italic;">
+                    (Valor de compra al proveedor para calcular márgenes de ganancia)
                 </p>
-                <label>Nueva Categoría (Opcional):</label><br>
-                <input type="text" name="nueva_categoria" placeholder="Ej: Conservadoras" style="padding: 5px; width: 200px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
 
-            <label>Imagen del Producto:</label><br>
-            <input type="file" name="imagen" accept="image/*" required><br><br>
+                <label>Categoría:</label>
+                <select name="categoria">
+                    <option value="Mates">Mates</option>
+                    <option value="Termos">Termos</option>
+                    <option value="Yerbas">Yerbas</option>
+                    <option value="Bombillas">Bombillas</option>
+                </select>
 
-            <label>Stock:</label><br>
-            <input type="number" name="stock" min="0"><br><br>
+                <label>Imagen del Producto:</label>
+                <input type="file" name="imagen" accept="image/*" required>
 
-            <label>Descripción:</label><br>
-            <textarea name="descripcion"></textarea><br><br>
+                <label>Stock Inicial:</label>
+                <input type="number" name="stock" min="0" value="0" required>
 
-            <button type="submit" class="btn-pagar">Guardar Producto</button>
-        </form>
-        <br>
-        <a href="/">Volver al inicio</a> 
+                <label>Descripción:</label>
+                <textarea name="descripcion" placeholder="Detalles del producto..."></textarea>
 
+                <button type="submit" class="btn-formulario">Guardar Producto</button>
+            </form>
+            
+            <br>
+            <a href="{{ url_for('lista_productos') }}" style="text-decoration: none; color: #13283A; font-weight: bold;">
+                <i class="fa-solid fa-arrow-left"></i> Cancelar y volver
+            </a> 
         </div>
-    {% endblock %}
+
     </div>
-</body>
-</html>
+    {% endblock %}
+</div>
