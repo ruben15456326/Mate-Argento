@@ -17,7 +17,7 @@ NIVELES_ACCESO = {
     'gestor': 5,
     'admin': 10
 }
-
+# DECORADOR PARA VALIDAR NIVELES DE ACCESO
 def requiere_nivel(nivel_minimo):
     """
     Decorador para proteger rutas según el nivel de acceso.
@@ -188,7 +188,7 @@ class Producto(db.Model):
         db.session.commit()
         return nuevo_prod
 
-    #  NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 🔥
+    #  NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 
     def actualizar_datos(self, datos_form, archivo_imagen):
         """
         Método de instancia (POO). Permite al objeto modificarse a sí mismo
@@ -415,7 +415,7 @@ class Carrito:
 
 
 # ==============================================================================
-# 🛣️ RUTAS DE FLASK (Controladores resumidos)
+# RUTAS DE FLASK (Controladores resumidos)
 # ==============================================================================
 
 # Carga los datos del carrito en todas las páginas para mostrarlos en el menú
@@ -632,7 +632,7 @@ def finalizar_compra():
 
 
 # ==============================================================================
-# 🛠️ PANEL DE CONTROL Y ADMINISTRACIÓN (SOLO ADMIN / ROL REQUERIDO)
+#  PANEL DE CONTROL Y ADMINISTRACIÓN (SOLO ADMIN / ROL REQUERIDO)
 # ==============================================================================
 
 FOLDER_FOTOS = os.path.join('static', 'img')
