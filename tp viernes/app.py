@@ -3,11 +3,29 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
+from flask import url_for
 
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
 app.secret_key = 'mi_llave_secreta_super_segura'
+ts = URLSafeTimedSerializer("CLAVE_SECRETA_PARA_EL_TOKEN")
+
+# =====================================================================
+# CONFIGURACIÓN DEL MOTOR DE MAIL
+# =====================================================================
+app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'  
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'a3890223295b8e'
+app.config['MAIL_PASSWORD'] = '9fbd23edc42d5a'     
+app.config['MAIL_DEFAULT_SENDER'] = 'ruben15456326@hotmail.com'
+app.config['MAIL_USE_SSL'] = False
+
+# Inicializamos el mail acá arriba para que todas las rutas lo vean
+mail = Mail(app)
 
 # --- CONFIGURACIÓN DE ROLES Y NIVELES ---
 # Definimos el "poder" de cada rol. Cuanto más alto el número, más permisos.
@@ -45,24 +63,16 @@ db = SQLAlchemy(app)
 # 👤 CLASE USUARIO (Modelo de BD + Lógica de Negocio POO)
 # ==============================================================================
 class Usuario(db.Model):
-    """
-    Representa a los usuarios del sistema. Centraliza los procesos de 
-    autenticación, registro y gestión de permisos (Roles).
-    """
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    # NUEVA COLUMNA:
     rol = db.Column(db.String(20), default='cliente')
 
     @classmethod
     def registrar(cls, nombre, email, password, rol='cliente'):
-        """
-        Método de clase (POO) para dar de alta usuarios.
-        Valida que el email no esté repetido antes de persistir en la BD.
-        Retorna la instancia del usuario si tiene éxito, o None si el mail ya existe.
-        """
+
         # BUSCAMOS si ya existe alguien con ese email
         if cls.query.filter_by(email=email).first():
             return None  # Si existe, frena la operación devolviendo None
@@ -72,7 +82,7 @@ class Usuario(db.Model):
         db.session.add(nuevo_usuario) # Lo agregamos
         db.session.commit()           # Guardamos de verdad
         return nuevo_usuario
-
+    
     @classmethod
     def autenticar(cls, email, password):
         """
@@ -171,7 +181,6 @@ class Producto(db.Model):
         return f"<Producto: {self.nombre}>"
 
 
-<<<<<<< HEAD
     @app.route('/admin/editar/<int:id>', methods=['GET', 'POST'])
     def editar_producto(id):
         # Buscamos el producto por ID (no usa classmethod porque SQLAlchemy ya busca por la clave primaria)
@@ -198,12 +207,6 @@ class Producto(db.Model):
 
         return render_template('editar.html', producto=producto)
 
-=======
-# ==============================================================================
-# 💬 CLASE OPINION (Modelo de BD + Lógica de Feedback POO)
-# ==============================================================================
-# Clase Opinion para armar el modelo en el que se van a guardar los datos en el .db
->>>>>>> 2f99269f5eb19bf92f2f16961f6a9563deac4e60
 class Opinion(db.Model):
     """
     Modela el buzón de comentarios de los clientes de la tienda.
@@ -378,17 +381,27 @@ def vista_login():
     if request.method == 'POST':
         # Validamos credenciales usando el método estático de Usuario
         user = Usuario.autenticar(request.form.get('email'), request.form.get('password'))
+        
         if user:
-            # GUARDAMOS EN LA SESIÓN
+            # =====================================================================
+            # EL CANDADO DE VERIFICACIÓN
+            # =====================================================================
+            # Si el rol sigue siendo 'pendiente' (o el valor por defecto de tu BD), lo frenamos
+            if user.rol != 'activo':
+                flash("Tu cuenta aún no está verificada. Por favor, revisá tu correo para activarla.")
+                return redirect(url_for('vista_login'))
+            # =====================================================================
+
+            # SI ESTÁ ACTIVO, PASA DERECHO Y SE GUARDA EN LA SESIÓN:
             session['usuario_id'] = user.id
             session['usuario_nombre'] = user.nombre
             session['usuario_rol'] = user.rol
             flash(f"¡Hola de nuevo, {user.nombre}!") 
             return redirect(url_for('inicio'))
+            
         flash("Email o contraseña incorrectos")
         return redirect(url_for('vista_login'))
     return render_template('login.html')
-
 
 # RUTA PARA CERRAR SESIÓN
 @app.route('/logout')
@@ -404,18 +417,45 @@ def vista_registro():
 
 @app.route('/registrar_usuario', methods=['POST'])
 def registrar_usuario():
-    # Delegamos la creación y validación de correo único a la propia clase Usuario
+    # 1. Tu modelo original de siempre
     nuevo = Usuario.registrar(request.form.get('nombre'), request.form.get('email'), request.form.get('password'))
     
-    if not nuevo: # Si devolvió None significa que el correo ya estaba tomado
-        flash("Ese mail ya está en uso") # <--- El mensaje push
+    if not nuevo:
+        flash("Ese mail ya está en uso") 
         return redirect(url_for('vista_registro'))
     
-    flash(f"¡Bienvenido {nuevo.nombre}! Usuario creado con exito.") # <--- El mensaje push
-    return redirect(url_for('vista_login')) # <--- TE MANDA DIRECTO AL LOGIN
+    def enviar_mail_verificacion_local(correo_usuario):
+        # Usamos el serializador que está abajo de todo
+        token = ts.dumps(correo_usuario, salt='activar-cuenta')
+        link_verificacion = url_for('confirmar_email', token=token, _external=True)
+        
+        msg = Message(subject="Verificá tu cuenta de Mate Argento", recipients=[correo_usuario])
+        msg.body = f"Para activar tu cuenta, hace click acá: {link_verificacion}"
+        mail.send(msg)
+        print("--- EL MAIL SALIÓ DE LA APP CON ÉXITO ---")
 
+    # 2. LA EJECUTAMOS INMEDIATAMENTE
+    try:
+        enviar_mail_verificacion_local(nuevo.email)
+    except Exception as e:
+        print(f"--- ERROR CRÍTICO AL ENVIAR EL MAIL: {e} ---")
 
-# --- FEEDBACK Y OPINIONES ---
+    # 3. Te manda al login con el cartel como siempre
+    flash(f"¡Usuario creado! Te enviamos un mail a {nuevo.email} para verificar tu cuenta.") 
+    return redirect(url_for('vista_login'))
+
+@app.route('/confirmar/<token>')
+def confirmar_email(token):
+    try:
+        email = ts.loads(token, salt='activar-cuenta', max_age=86400)
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario:
+            usuario.rol = 'activo'
+            db.session.commit()
+            return "<h1>¡Cuenta verificada con éxito!</h1><p>Ya podés cerrar esta pestaña y loguearte.</p>"
+        return "Usuario no encontrado."
+    except Exception as e:
+        return "<h1>El enlace es inválido o ya venció.</h1>"
 
 # Aca se guarda el nombre y la opinion que se sacaron de la sesion y de la opinion en el archivo.db
 @app.route('/enviar_opinion', methods=['POST'])
@@ -562,16 +602,18 @@ def admin_crear_usuario():
     # Si es GET, simplemente mostramos el formulario
     return render_template('admin_crear_usuario.html')
 
-
 # RUTA PARA ELIMINAR USUARIOS (SOLO ADMIN)
 @app.route('/admin/eliminar_usuario/<int:id>')
 @requiere_nivel(10)
 def eliminar_usuario(id):
     user = Usuario.query.get_or_404(id)
-    user.eliminar() # El usuario se autoelimina de la base de datos
+    
+    # CAMBIO: Usamos las herramientas directas de la base de datos
+    db.session.delete(user) # Le decimos a la DB que borre este usuario
+    db.session.commit()     # Guardamos el cambio definitivo
+    
     flash(f"Usuario eliminado.")
     return redirect(url_for('lista_usuarios'))
-
 
 # RUTA PARA VER EL PANEL DE CONTROL CON ESTADÍSTICAS (SOLO ADMIN)
 @app.route('/admin/dashboard')
@@ -596,3 +638,4 @@ def crear_admin():
 
 if __name__ == '__main__':
     app.run(debug=True)
+

@@ -34,7 +34,7 @@
                     </td>
                     <td style="padding: 12px; text-align: center;">
                         <a href="#" title="Editar"><i class="fa-solid fa-pen-to-square" style="color: #13283A; margin-right: 10px;"></i></a>
-                        <a href="#" title="Eliminar"><i class="fa-solid fa-trash" style="color: #c0392b;"></i></a>
+                        <a href="{{ url_for('eliminar_usuario', id=u.id) }}" title="Eliminar"><i class="fa-solid fa-trash" style="color: #c0392b;"></i></a>
                     </td>
                 </tr>
                 {% else %}
