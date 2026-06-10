@@ -562,7 +562,7 @@ def nuevo_producto():
         
         # Como SQLAlchemy nos devuelve una lista de tuplas (ej: [('Mates',), ('Termos',)]), 
         # las limpiamos en una lista de textos simple:
-        lista_categorias = [cat[0] for cat in categories_db if cat[0]]
+        lista_categorias = [cat[0] for cat in categorias_db if cat[0]]
     except Exception as e:
         # Por las dudas, si la base de datos está vacía o tira error, dejamos un salvavidas
         lista_categorias = ["Mates", "Termos", "Yerbas", "Bombillas"]
