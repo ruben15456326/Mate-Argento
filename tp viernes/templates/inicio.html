@@ -60,6 +60,39 @@
         </div>
 
     </div>
+
+    <h2>Todos los Productos</h2>
+    <div class="contenedor-padre3">
+    
+        {% set categorias_nuevas = [
+            {'nombre': 'Conservadoras', 'imagen': 'conservadora.jpg'},
+            {'nombre': 'Juego de Pava', 'imagen': 'juego_pava.webp'},
+            {'nombre': 'Chopera', 'imagen': 'chopera.jpg'},
+            {'nombre': 'Cuchillos', 'imagen': 'cuchillos.jpg'},
+            {'nombre': 'Regalos Empresariales', 'imagen': 'regalo.jpg'},
+            {'nombre': 'Autocebantes', 'imagen': 'autocebantes.webp'},
+            {'nombre': 'Cafe x Mayor', 'imagen': 'cafe.jpg'},
+            {'nombre': 'Bolsos y Portatermos', 'imagen': 'Bolsos.jpg'},
+            {'nombre': 'Kits de Futbol', 'imagen': 'equipos.webp'},
+            {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
+            {'nombre': 'Kits con Mochila', 'imagen': 'set_mochila.webp'},
+            {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'}
+        ] %}
+
+        {% for cat in categorias_nuevas %}
+            <div class="tarjeta">
+                <a href="/seccion/{{ cat.nombre }}" class="enlace-titulo efecto-verde">
+                    <h3>{{ cat.nombre }}</h3>
+                </a>
+                <a href="/seccion/{{ cat.nombre }}">
+                    <img src="{{ url_for('static', filename='img/' + cat.imagen) }}" alt="{{ cat.nombre }}">
+                </a>
+            </div>
+        {% endfor %}
+
+    </div>
+
+</div>
    
     <br><br>
     {% endblock %}

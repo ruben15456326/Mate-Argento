@@ -20,11 +20,22 @@
 
             <label>Categoría:</label><br>
             <select name="categoria">
-                <option value="Mates">Mates</option>
-                <option value="Termos">Termos</option>
-                <option value="Yerbas">Yerbas</option>
-                <option value="Bombillas">Bombillas</option>
-            </select><br><br>
+                <option value="" disabled selected>-- Seleccione una categoría --</option>
+    
+                {# Recorremos las categorías dinámicas de la base de datos #}
+                {% for cat in categorias %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+
+            <div style="border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 10px;">
+                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: #555;">
+                    <i>¿La categoría que buscás no está en la lista? Creala acá:</i>
+                </p>
+                <label>Nueva Categoría (Opcional):</label><br>
+                <input type="text" name="nueva_categoria" placeholder="Ej: Conservadoras" style="padding: 5px; width: 200px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
 
             <label>Imagen del Producto:</label><br>
             <input type="file" name="imagen" accept="image/*" required><br><br>
@@ -35,7 +46,7 @@
             <label>Descripción:</label><br>
             <textarea name="descripcion"></textarea><br><br>
 
-            <button type="submit">Guardar Producto</button>
+            <button type="submit" class="btn-pagar">Guardar Producto</button>
         </form>
         <br>
         <a href="/">Volver al inicio</a> 

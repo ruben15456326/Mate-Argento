@@ -156,10 +156,20 @@ class Producto(db.Model):
         else:
             nombre_imagen_db = "default.jpg" # Por si no suben nada
 
+        # --- [NUEVO] FILTRO INTELIGENTE DE CATEGORÍA ---
+        nueva_cat = datos_form.get('nueva_categoria')
+        if nueva_cat and nueva_cat.strip() != "":
+            # Si el admin inventó una categoría en el campo de texto, usamos esa
+            categoria_final = nueva_cat.strip()
+        else:
+            # Si ese campo quedó vacío, agarramos la que seleccionó del select
+            categoria_final = datos_form.get('categoria')
+
+        # --- CREACIÓN DEL PRODUCTO ---
         nuevo_prod = cls(
             nombre=datos_form.get('nombre'),
             precio=float(datos_form.get('precio')),
-            categoria=datos_form.get('categoria'),
+            categoria=categoria_final, # <--- ¡ACÁ CLAVAMOS LA CATEGORÍA FILTRADA!
             stock=int(datos_form.get('stock', 0)), # Si no viene, asumimos 0
             descripcion=datos_form.get('descripcion'),
             imagen=nombre_imagen_db
@@ -387,7 +397,7 @@ def vista_login():
             # EL CANDADO DE VERIFICACIÓN
             # =====================================================================
             # Si el rol sigue siendo 'pendiente' (o el valor por defecto de tu BD), lo frenamos
-            if user.rol != 'activo':
+            if user.rol not in ['activo', 'admin']:
                 flash("Tu cuenta aún no está verificada. Por favor, revisá tu correo para activarla.")
                 return redirect(url_for('vista_login'))
             # =====================================================================
@@ -545,9 +555,20 @@ def nuevo_producto():
         flash(f"¡Producto {nuevo.nombre}! agregado con exito.") # <--- El mensaje push
         return redirect(url_for('inicio')) # <--- TE MANDA DIRECTO AL INICIO
     
-    # Si es GET, mostramos el formulario de carga
-    return render_template('cargar_producto.html')
+    # --- ACÁ TRAEMOS LAS CATEGORÍAS AUTOMÁTICAMENTE DESDE LA DB ---
+    try:
+        # Buscamos todas las categorías únicas que ya tenés guardadas en tu tabla de productos
+        categorias_db = db.session.query(Producto.categoria.distinct()).all()
+        
+        # Como SQLAlchemy nos devuelve una lista de tuplas (ej: [('Mates',), ('Termos',)]), 
+        # las limpiamos en una lista de textos simple:
+        lista_categorias = [cat[0] for cat in categories_db if cat[0]]
+    except Exception as e:
+        # Por las dudas, si la base de datos está vacía o tira error, dejamos un salvavidas
+        lista_categorias = ["Mates", "Termos", "Yerbas", "Bombillas"]
 
+    # Se las pasamos al HTML
+    return render_template('cargar_producto.html', categorias=lista_categorias)
 
 # Ruta para eliminar productos (SOLO ADMIN)
 @app.route('/eliminar_producto/<int:id>')
