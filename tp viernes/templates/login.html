@@ -10,6 +10,23 @@
             <a href="/">
                 <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 120px; height: 120px;">
             </a>
+    <!-- NOTIFICACIONES FLASH -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="mensaje-push" id="notificacion">
+                {{ messages[0] }}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const notify = document.getElementById('notificacion');
+                    if(notify) {
+                        notify.style.opacity = '0';
+                        setTimeout(() => notify.remove(), 500);
+                    }
+                }, 3000);
+            </script>
+        {% endif %}
+    {% endwith %}
     
             <h2>Iniciar Sesión</h2>
     

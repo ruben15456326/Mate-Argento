@@ -1,0 +1,65 @@
+<div class="contenedor">
+    {% extends "base.html" %}
+    {% block content %}
+    <br><br>
+    
+    <div class="admin-header">
+        <i class="fa-solid fa-boxes-stacked fa-3x" style="color: #13283A;"></i>
+        <h2>Inventario General de Productos</h2>
+        <p>Modificá datos, controlá el stock o eliminá productos del catálogo</p>
+    </div>
+
+    <div class="admin-actions-top">
+        <a href="{{ url_for('nuevo_producto') }}" class="btn-pagar-carrito" style="text-decoration: none; padding: 10px 15px;">
+            + CARGAR NUEVO PRODUCTO
+        </a>
+    </div>
+
+    <table class="admin-tabla">
+        <thead>
+            <tr>
+                <th>Foto</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio Costo</th>
+                 <th>Precio Venta</th>
+                <th>Stock</th>
+                <th class="celda-centrada">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" class="admin-tabla-img">
+                </td>
+                <td style="font-weight: bold; color: #333;">{{ p.nombre }}</td>
+                <td style="color: #666;">{{ p.categoria }}</td>
+                
+                <td style="color: #6f42c1; font-weight: bold;">
+                    ${{ "%.2f"|format(p.precio_costo if p.precio_costo else 0.0) }}
+                </td>
+                
+                <td style="color: #28a745; font-weight: bold;">${{ "%.2f"|format(p.precio) }}</td>
+                <td>
+                    <span class="badge-admin {% if p.stock > 0 %}badge-activo{% else %}badge-bloqueado{% endif %}">
+                        {{ p.stock }} unidades
+                    </span>
+                </td>
+                <td class="celda-centrada">
+                    <a href="{{ url_for('editar_producto', id=p.id) }}" class="btn-tabla btn-tabla-editar">✏️ Editar</a>
+                    <a href="/admin/eliminar_producto/{{ p.id }}" onclick="return confirm('¿Seguro querés eliminar este producto?');" class="btn-tabla btn-tabla-eliminar">🗑️ Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <br><br>
+    <div class="celda-centrada" style="padding-bottom: 20px;">
+        <a href="{{ url_for('dashboard') }}" style="color: #13283A; text-decoration: none; font-weight: bold;">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Centro de Mandos
+        </a>
+    </div>
+    {% endblock %}
+</div>
