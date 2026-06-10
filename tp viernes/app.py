@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from functools import wraps
 from datetime import datetime
 
@@ -69,7 +69,7 @@ class Usuario(db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     rol = db.Column(db.String(20), default='cliente')
-    activo = db.Column(db.Boolean, default=True) 
+    activo = db.Column(db.Boolean, default=False) 
 
     @classmethod
     def registrar(cls, nombre, email, password, rol='cliente'):
@@ -500,7 +500,7 @@ def vista_login():
             # EL CANDADO DE VERIFICACIÓN
             # =====================================================================
             # Si el rol sigue siendo 'pendiente' (o el valor por defecto de tu BD), lo frenamos
-            if user.rol not in ['activo', 'admin']:
+            if not user.activo:
                 flash("Tu cuenta aún no está verificada. Por favor, revisá tu correo para activarla.")
                 return redirect(url_for('vista_login'))
             # =====================================================================
@@ -563,7 +563,7 @@ def confirmar_email(token):
         email = ts.loads(token, salt='activar-cuenta', max_age=86400)
         usuario = Usuario.query.filter_by(email=email).first()
         if usuario:
-            usuario.rol = 'activo'
+            usuario.activo = True
             db.session.commit()
             return "<h1>¡Cuenta verificada con éxito!</h1><p>Ya podés cerrar esta pestaña y loguearte.</p>"
         return "Usuario no encontrado."
