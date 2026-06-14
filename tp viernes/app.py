@@ -16,13 +16,13 @@ ts = URLSafeTimedSerializer("CLAVE_SECRETA_PARA_EL_TOKEN")
 # =====================================================================
 # CONFIGURACIÓN DEL MOTOR DE MAIL
 # =====================================================================
-app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'  
-app.config['MAIL_PORT'] = 2525
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'a3890223295b8e'
-app.config['MAIL_PASSWORD'] = '9fbd23edc42d5a'     
-app.config['MAIL_DEFAULT_SENDER'] = 'ruben15456326@hotmail.com'
 app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'ruben650160@gmail.com'
+app.config['MAIL_PASSWORD'] = 'gwwuxyrjezjiwodr'     
+app.config['MAIL_DEFAULT_SENDER'] = 'ruben650160@gmail.com'
 
 # Inicializamos el mail acá arriba para que todas las rutas lo vean
 mail = Mail(app)
