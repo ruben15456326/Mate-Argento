@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, url_for, session, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func 
 import os
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from functools import wraps
 from datetime import datetime
+ 
 
 #comentario inicial para probar el git
 #hola
@@ -131,7 +133,7 @@ class Usuario(db.Model):
         return self.activo
     
     def actualizar_rol_usuario(self, nuevo_rol):
-        """Valida y actualiza el rol del usuario"""
+    #Valida y actualiza el rol del usuario
         roles_permitidos = ['cliente', 'gestor', 'admin']
         if nuevo_rol in roles_permitidos:
             self.rol = nuevo_rol
@@ -207,6 +209,31 @@ class Producto(db.Model):
         db.session.commit()
         return nuevo_prod
 
+    @classmethod
+    def obtener_mas_vendido_por_categoria(cls, nombre_categoria):
+        """
+        Método de clase (POO). Consulta los detalles de ventas,
+        suma las cantidades agrupadas por producto y devuelve el producto
+        más vendido de la categoría especificada.
+        Si nadie compró nada de esa categoría, devuelve el primero que encuentre.
+        """
+        # Hacemos un Join entre Producto y DetalleVenta para sumar las cantidades
+        resultado = db.session.query(
+            cls, 
+            func.sum(DetalleVenta.cantidad).label('total_vendido')
+        ).join(DetalleVenta, cls.id == DetalleVenta.producto_id)\
+         .filter(cls.categoria == nombre_categoria)\
+         .group_by(cls.id)\
+         .order_by(func.sum(DetalleVenta.cantidad).desc())\
+         .first()
+
+        # Si la consulta trajo un resultado, devolvemos el objeto Producto (el primer elemento de la tupla)
+        if resultado:
+            return resultado[0]
+        
+        # Si la tienda es nueva o nadie compró de esa categoría todavía,
+        # tiramos un fallback al primer producto de esa categoría para que la web no rompa
+        return cls.query.filter_by(categoria=nombre_categoria).first()
     #  NUEVO MÉTODO AGREGADO (MÉTODO DE INSTANCIA) 
     def actualizar_datos(self, datos_form, archivo_imagen):
         """
@@ -450,8 +477,22 @@ def procesar_carrito():
 
 @app.route('/')
 def inicio():
-    # Buscamos todos los productos en la base de datos y se los pasamos al HTML
-    return render_template('inicio.html', productos=Producto.query.all())
+    # Traemos el más vendido de cada una de las 4 categorías destacadas
+    mas_vendidos = {
+        'Yerbas': Producto.obtener_mas_vendido_por_categoria('Yerbas'),
+        'Mates': Producto.obtener_mas_vendido_por_categoria('Mates'),
+        'Bombillas': Producto.obtener_mas_vendido_por_categoria('Bombillas'),
+        'Termos': Producto.obtener_mas_vendido_por_categoria('Termos')
+    }
+    
+    # CORRECCIÓN AQUÍ: Consultamos las últimas 4 opiniones de la base de datos
+    ultimas_opiniones = Opinion.query.order_by(Opinion.id.desc()).limit(4).all()
+    
+    # Pasamos todos los productos, los destacados y la nueva lista de opiniones
+    return render_template('inicio.html', 
+                           productos=Producto.query.all(), 
+                           destacados=mas_vendidos, 
+                           opiniones=ultimas_opiniones)
 
 
 # RUTA PARA BUSCAR PRODUCTOS DESDE EL FORMULARIO DE BÚSQUEDA
@@ -880,7 +921,7 @@ def eliminar_usuario(id):
 
 # RUTA PARA VER EL PANEL DE CONTROL CON ESTADÍSTICAS (SOLO ADMIN)
 @app.route('/admin/dashboard')
-@requiere_nivel(10) # Solo el Administrador absoluto tiene acceso
+@requiere_nivel(5) 
 def dashboard():
     # Renderizamos la plantilla pasando los conteos directos de las clases
     return render_template('admin/dashboard.html', 

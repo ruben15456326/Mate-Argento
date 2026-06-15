@@ -53,7 +53,7 @@
             {% if session.get('usuario_nombre') %}
                 <nav>
                     <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
-                    {% if session.get('usuario_rol') == 'admin' %}
+                    {% if session.get('usuario_rol') == 'admin' or session.get('usuario_rol') == 'gestor' %}
                         <!-- Botón destacado para el administrador -->
                         <!-- <a href="/admin/nuevo_producto" style="color: red; font-weight: bold;">[ PANEL CARGA ]</a> | -->
                          <a href="/admin/dashboard" style="color: #e6222c; font-weight: bold; text-decoration: none;">
@@ -168,8 +168,6 @@
 </body>
 </html>
 
-<!// El siguiente script se encarga de recordar si el carrito estaba abierto o cerrado, incluso después>
-
 <script>
     const carrito = document.getElementById('mi-carrito-desplegable');
 
@@ -178,12 +176,25 @@
         carrito.setAttribute('open', '');
     }
 
-    // 2. Escuchamos cuando el usuario abre o cierra el carrito
+    // 2. Escuchamos cuando el usuario abre o cierra el carrito manualmente
     carrito.addEventListener('toggle', () => {
         if (carrito.open) {
             localStorage.setItem('carritoAbierto', 'true');
         } else {
             localStorage.setItem('carritoAbierto', 'false');
+        }
+    });
+
+    // 3. Cerrar el carrito automáticamente si se hace clic afuera de él
+    document.addEventListener('click', (evento) => {
+        // Si el carrito está abierto...
+        if (carrito.open) {
+            // ...y el clic NO se hizo ni dentro del carrito ni en sus elementos internos
+            if (!carrito.contains(evento.target)) {
+                // Le removemos el atributo open para que se cierre con elegancia
+                carrito.removeAttribute('open');
+                localStorage.setItem('carritoAbierto', 'false');
+            }
         }
     });
 </script>

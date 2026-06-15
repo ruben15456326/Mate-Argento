@@ -34,12 +34,14 @@ body {
 }
 
 .contenedor-pie {
-    display: flex;             /* Activa el modo flexible */
-    flex-direction: row;       /* Los pone en fila (horizontal) */
-    justify-content: space-between; /* Deja espacio igual entre los 4 */
-    align-items: center;       /* Los centra verticalmente */
+    display: flex;             
+    flex-direction: row;       
+    flex-wrap: wrap;           /* ¡ESTO ES CLAVE! Permite que las tarjetas bajen si no entran */
+    justify-content: space-between; 
+    align-items: flex-start;   /* Alinea los títulos arriba para que no queden desparejos */
+    gap: 20px;                 /* Separa las columnas de forma idéntica cuando se amontonen */
     padding: 20px;
-    background-color: #CADDEE; /* Color para que lo veas */
+    background-color: #CADDEE;
     border-radius: 10px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
 }
@@ -81,7 +83,7 @@ body {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;    /* [NUEVO] Permite que los elementos bajen si no hay espacio *//* Esto separa automáticamente los 3 elementos (logo, buscador, links) */
-    gap: 10px;
+    gap: 20px;
     padding: 10px 20px;
 }
 
@@ -189,15 +191,17 @@ h3 {
     align-self: center;
 }
 
-.tarjeta-pie{
+.tarjeta-pie {
     background-color: #CADDEE;
     padding: 10px;
     border-radius: 8px;
-    width: 200px;
+    width: 200px;              /* Ancho ideal en computadoras */
+    flex-grow: 1;              /* En pantallas medianas (tablets) se estiran para rellenar */
+    min-width: 220px;          /* En celulares, si el espacio es menor a 220px, ¡pum! tiran el salto de línea */
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Empuja el precio y botón al final */
+    justify-content: space-between;
     height: 100%;
     box-sizing: border-box;
 }
@@ -218,8 +222,9 @@ h3 {
     border: 3px solid #ccc;
     overflow: hidden;
     flex-grow: 1;       /* [NUEVO] Hace que el buscador use el espacio disponible */
-    max-width: 500px;   /* [NUEVO] Evita que se estire demasiado en pantallas gigantes */
-    min-width: 200px;   /* [NUEVO] Evita que se encoja tanto que no se pueda usar */
+    max-width: 400px;   /* [NUEVO] Evita que se estire demasiado en pantallas gigantes */
+    min-width: 150px;   /* [NUEVO] Evita que se encoja tanto que no se pueda usar */
+   
 }
 
 .buscador-corto button {
@@ -231,12 +236,20 @@ h3 {
     width: auto;
         
 }
+.bloque-superior form {
+    flex-grow: 0;      
+    max-width: 400px;
+    width: 100%;
+}
+
+
 .buscador-corto input {
     flex-grow: 1;      /* [NUEVO] El input ahora es el encargado de absorber el espacio */
     border: none;
     padding: 5px 10px;
     outline: none;
     min-width: 0;      /* [TRUCO] Evita que el input rompa el contenedor en pantallas muy chicas */
+    width: 100%;
 }
 
 
@@ -298,12 +311,14 @@ summary::-webkit-details-marker {
     cursor: pointer;
 }
                                     /* MODIFICA EL FOOTER DEL PIE DE PAGINA PARA Q SE ESQUINE*/
+/* 1. Limpiamos el footer para que no desborde la pantalla hacia los costados */
 footer {
-    width: calc(100% + 40px) !important;     
+    width: 100% !important;     
     padding: 0 !important;
-    margin-left: -20px !important; 
-    margin-right: -20px !important;
-    margin-bottom: -20px !important;
+    margin-left: 0 !important; 
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    box-sizing: border-box; /* Clave para que los paddings no sumen ancho extra */
 }
 /* Contenedor del carrito que se despliega */
 .carrito-desplegable {

@@ -11,52 +11,64 @@
 
     {% extends 'base.html' %}
     {% block content %}
-    <!-- MUESTRA LOS PRODUCTOS DE LA BASE DE DATOS -->
     <h2>Productos destacados</h2>
 
-    <div class="contenedor-padre3">
+ <div class="contenedor-padre3">
 
         <div class="tarjeta">
             <a href="/seccion/Yerbas" class="enlace-titulo efecto-verde"><h3>YERBAS</h3></a>
-            {% set p = productos | selectattr("categoria", "equalto", "Yerbas") | first %}
-            <h4>{{ p.nombre }}</h4>
-            <a href="/detalle/{{ p.id }}">
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
-            </a>
-            <p><b>${{ p.precio }}</b></p>
+            {% set p = destacados['Yerbas'] %}
+            {% if p %}
+                <h4>{{ p.nombre }}</h4>
+                <a href="/detalle/{{ p.id }}">
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+                </a>
+                <p><b>${{ p.precio }}</b></p>
+            {% else %}
+                <p>No hay productos en esta categoría</p>
+            {% endif %}
         </div>
 
         <div class="tarjeta">
-
             <a href="/seccion/Mates" class="enlace-titulo efecto-verde"><h3>MATES</h3></a>
-            {% set p = productos | selectattr("categoria", "equalto", "Mates") | first %}
-            <h4>{{ p.nombre }}</h4>
-            <a href="/detalle/{{ p.id }}">
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
-            </a>
-            <p><b>${{ p.precio }}</b></p>
+            {% set p = destacados['Mates'] %}
+            {% if p %}
+                <h4>{{ p.nombre }}</h4>
+                <a href="/detalle/{{ p.id }}">
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+                </a>
+                <p><b>${{ p.precio }}</b></p>
+            {% else %}
+                <p>No hay productos en esta categoría</p>
+            {% endif %}
         </div>
 
         <div class="tarjeta">
-
             <a href="/seccion/Bombillas" class="enlace-titulo efecto-verde"><h3>BOMBILLAS</h3></a>
-            {% set p = productos | selectattr("categoria", "equalto", "Bombillas") | first %}
-            <h4>{{ p.nombre }}</h4>
-            <a href="/detalle/{{ p.id }}">
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
-            </a>
-            <p><b>${{ p.precio }}</b></p>
+            {% set p = destacados['Bombillas'] %}
+            {% if p %}
+                <h4>{{ p.nombre }}</h4>
+                <a href="/detalle/{{ p.id }}">
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+                </a>
+                <p><b>${{ p.precio }}</b></p>
+            {% else %}
+                <p>No hay productos en esta categoría</p>
+            {% endif %}
         </div>
 
         <div class="tarjeta">
-
             <a href="/seccion/Termos" class="enlace-titulo efecto-verde"><h3>TERMOS</h3></a>
-            {% set p = productos | selectattr("categoria", "equalto", "Termos") | first %}
-            <h4>{{ p.nombre }}</h4>
-            <a href="/detalle/{{ p.id }}">
-                <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
-            </a>
-            <p><b>${{ p.precio }}</b></p>
+            {% set p = destacados['Termos'] %}
+            {% if p %}
+                <h4>{{ p.nombre }}</h4>
+                <a href="/detalle/{{ p.id }}">
+                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
+                </a>
+                <p><b>${{ p.precio }}</b></p>
+            {% else %}
+                <p>No hay productos en esta categoría</p>
+            {% endif %}
         </div>
 
     </div>
@@ -90,6 +102,31 @@
             </div>
         {% endfor %}
 
+    </div>
+
+    <h2>Últimas opiniones</h2>
+    <div class="contenedor-padre3">
+        {% if opiniones %}
+            {% for opinion in opiniones %}
+                <div class="tarjeta" style="justify-content: flex-start; gap: 10px;">
+                    <div style="font-size: 40px; color: #13283A; margin: 10px 0;">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                    <h4 style="margin: 5px 0; color: #2c3e50;">
+                        {% if opinion.nombre_cliente  %}
+                            {{ opinion.nombre_cliente  }}
+                        {% else %}
+                            Cliente Anónimo
+                        {% endif %}
+                    </h4>
+                    <p style="font-size: 0.9em; font-style: italic; color: #555; word-wrap: break-word; flex-grow: 1;">
+                        "{{ opinion.comentario }}"
+                    </p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hay opiniones todavía 🧉</p>
+        {% endif %}
     </div>
 
 </div>
