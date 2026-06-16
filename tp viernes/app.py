@@ -7,13 +7,19 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from functools import wraps
 from datetime import datetime
- 
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
 app.secret_key = 'mi_llave_secreta_super_segura'
 ts = URLSafeTimedSerializer("CLAVE_SECRETA_PARA_EL_TOKEN")
+
+# Configuración mínima para que funcione la base de datos
+db_path = os.path.join(os.path.dirname(__file__), 'mate_argento.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+db = SQLAlchemy(app)
+
 
 # =====================================================================
 # CONFIGURACIÓN DEL MOTOR DE MAIL
@@ -55,12 +61,15 @@ def requiere_nivel(nivel_minimo):
         return decorated_function
     return decorator
 
-# Configuración mínima para que funcione la base de datos
-db_path = os.path.join(os.path.dirname(__file__), 'mate_argento.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-db = SQLAlchemy(app)
+def generar_token(email):
+    return ts.dumps(email, salt='recuperar-password')
 
-
+def verificar_token(token, expiration=3600):
+    try:
+        email = ts.loads(token, salt='recuperar-password', max_age=expiration)
+        return email
+    except:
+        return None
 
 #  CLASE USUARIO (Modelo de BD + Lógica de Negocio POO)
 
@@ -69,9 +78,10 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(500), nullable=False)
     rol = db.Column(db.String(20), default='cliente')
     activo = db.Column(db.Boolean, default=False) 
+    bloqueado = db.Column(db.Integer, default=0)
 
     @classmethod
     def registrar(cls, nombre, email, password, rol='cliente'):
@@ -92,7 +102,18 @@ class Usuario(db.Model):
     
     @classmethod
     def autenticar(cls, email, password):
-        return cls.query.filter_by(email=email, password=password).first()
+        user = cls.query.filter_by(email=email).first()
+        
+        if user:
+            # Caso A: Si es un hash (lo nuevo)
+            if user.password.startswith('scrypt:'): 
+                if check_password_hash(user.password, password):
+                    return user
+            # Caso B: Si es texto plano (lo viejo/admin)
+            elif user.password == password:
+                return user
+                
+        return None
 
     def actualizar_rol(self, nuevo_rol):
         """
@@ -112,25 +133,14 @@ class Usuario(db.Model):
     # --- NUEVOS MÉTODOS DE OBJETO ---
 
     def alternar_estado_usuario(self):
-        """
-        Alterna de forma estricta el estado del usuario entre 1 (Activo) y 0 (Bloqueado).
-        Resuelve el problema de trabas en SQLite convirtiendo el valor a entero.
-        """
-        # Forzamos a Python a leer el valor actual como un número entero puro
-        estado_actual = int(self.activo) if self.activo is not None else 0
-
-        # Si está activo (1), lo clavamos en 0 (Bloqueado)
-        if estado_actual == 1:
-            self.activo = 0
+        # Si está bloqueado (1), lo desbloqueamos (0). Si no, lo bloqueamos (1).
+        if self.bloqueado == 1:
+            self.bloqueado = 0
         else:
-            # Si está en 0 (o cualquier otra cosa), lo clavamos en 1 (Activo)
-            self.activo = 1
-            
-        # Guardamos el cambio físicamente en el archivo .db
-        db.session.commit()
+            self.bloqueado = 1
         
-        # Devolvemos el valor real que quedó guardado
-        return self.activo
+        db.session.commit()
+        return self.bloqueado # Devuelve el estado final
     
     def actualizar_rol_usuario(self, nuevo_rol):
     #Valida y actualiza el rol del usuario
@@ -537,15 +547,14 @@ def vista_login():
         user = Usuario.autenticar(request.form.get('email'), request.form.get('password'))
         
         if user:
-            # =====================================================================
-            # EL CANDADO DE VERIFICACIÓN
-            # =====================================================================
             # Si el rol sigue siendo 'pendiente' (o el valor por defecto de tu BD), lo frenamos
             if not user.activo:
                 flash("Tu cuenta aún no está verificada. Por favor, revisá tu correo para activarla.")
                 return redirect(url_for('vista_login'))
-            # =====================================================================
-
+            if user.bloqueado == 1:
+                flash("Tu cuenta ha sido bloqueada por un administrador.")
+                return redirect(url_for('vista_login'))
+            
             # SI ESTÁ ACTIVO, PASA DERECHO Y SE GUARDA EN LA SESIÓN:
             session['usuario_id'] = user.id
             session['usuario_nombre'] = user.nombre
@@ -726,6 +735,56 @@ def finalizar_compra():
         flash(str(e), "danger")
         return redirect(url_for('inicio')) # O a la vista del carrito
 
+# Asegurate de importar tu modelo, por ejemplo: from models import Usuario
+# Si no tenés un archivo models.py, probablemente tengas la clase definida en app.py
+
+@app.route('/recuperar-password', methods=['GET', 'POST'])
+def recuperar_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        
+        # BUSCAR USUARIO CON SQLALCHEMY
+        # 'Usuario' debe ser el nombre de la clase que definiste para tu tabla
+        usuario = Usuario.query.filter_by(email=email).first()
+        
+        if usuario:
+            token = generar_token(email)
+            link = url_for('resetear_password', token=token, _external=True)
+            
+            # Tu función de envío de mail (asegúrate de que esté definida)
+            msg = Message("Recuperación de contraseña", recipients=[email])
+            msg.body = f"Haz clic en el siguiente enlace para restablecer tu contraseña: {link}"
+            mail.send(msg)
+            
+            flash("Si el correo existe, recibirás un mensaje en breve.")
+        else:
+            flash("Si el correo existe, recibirás un mensaje en breve.") # Por seguridad, no digas si existe o no
+            
+        return redirect(url_for('vista_login')) # O a donde prefieras
+        
+    return render_template('recuperar.html')
+
+@app.route('/resetear-password/<token>', methods=['GET', 'POST'])
+def resetear_password(token):
+    email = verificar_token(token)
+    if not email:
+        flash("El token es inválido o expiró.")
+        return redirect(url_for('vista_login'))
+    
+    if request.method == 'POST':
+        nueva_password = request.form['password']
+        
+        # BUSCAR Y ACTUALIZAR CON SQLALCHEMY
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario:
+            usuario.password = generate_password_hash(nueva_password) # Hasheando la password
+            db.session.add(usuario)
+            db.session.commit()
+            print(f"DEBUG: Contraseña guardada (hash): {usuario.password}")
+            flash("Contraseña actualizada con éxito.")
+            return redirect(url_for('vista_login'))
+            
+    return render_template('resetear.html', token=token)
 
 # ==============================================================================
 #  PANEL DE CONTROL Y ADMINISTRACIÓN (SOLO ADMIN / ROL REQUERIDO)
@@ -797,24 +856,21 @@ def editar_rol(id):
 def alternar_estado(id):
     usuario = Usuario.query.get_or_404(id)
     
-    # Ejecuta el nuevo método estricto de arriba
-    esta_activo = usuario.alternar_estado_usuario()
+    # 1. Ejecutamos el cambio de estado (que ya hace el commit internamente)
+    nuevo_estado = usuario.alternar_estado_usuario()
     
-    # Guardamos el nombre antes de limpiar la sesión
+    # 2. Guardamos el nombre para el mensaje
     nombre_usuario = usuario.nombre
     
-    # Limpieza total de la memoria de SQLAlchemy
-    db.session.expire_all()
-    db.session.remove()
-    
-    # Evaluamos el resultado del método (1 para activado, 0 para bloqueado)
-    if esta_activo == 1:
-        flash(f"¡El usuario {nombre_usuario} ahora está ACTIVADO!", "success")
+    # 3. Evaluamos el resultado: 
+    # Si nuevo_estado es 1, significa que está ACTIVO (desbloqueado)
+    # Si nuevo_estado es 0, significa que está BLOQUEADO
+    if nuevo_estado == 1:
+        flash(f"¡El usuario {nombre_usuario} ahora está BLOQUEADO!", "success")
     else:
-        flash(f"¡El usuario {nombre_usuario} ha sido BLOQUEADO con éxito!", "danger")
+        flash(f"¡El usuario {nombre_usuario} ha sido ACTIVADO con éxito!", "danger")
         
     return redirect(url_for('lista_usuarios'))
-
 # Ruta para eliminar productos (SOLO ADMIN)
 @app.route('/admin/eliminar_producto/<int:id>')
 @requiere_nivel(5)

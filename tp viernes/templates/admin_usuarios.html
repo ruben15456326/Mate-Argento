@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mate Argento - Usuarios</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
+</head>
 <div class="contenedor">
     {% extends "base.html" %}
     {% block content %}
@@ -27,23 +33,29 @@
                 <td>
                     <span style="text-transform: capitalize; font-weight: 500;">{{ u.rol }}</span>
                 </td>
+                
                 <td class="celda-centrada">
-                    <span class="badge-admin {% if u.activo|int == 1 %}badge-activo{% else %}badge-bloqueado{% endif %}">
-                        {% if u.activo|int == 1 %}Activo{% else %}Bloqueado{% endif %}
-                    </span>
+                    {% if u.bloqueado|int == 1 %}
+                        <span class="badge-admin badge-bloqueado" style="background-color: #e74c3c; color: white;">Bloqueado (Admin)</span>
+                    {% elif u.activo|int == 0 %}
+                        <span class="badge-admin" style="background-color: #95a5a6; color: white;">Pendiente</span>
+                    {% else %}
+                        <span class="badge-admin badge-activo" style="background-color: #27ae60; color: white;">Activo</span>
+                    {% endif %}
                 </td>
+
                 <td class="celda-centrada">
-                    <a href="/admin/editar_rol/{{ u.id }}" class="btn-tabla btn-tabla-editar" style="background-color: #13283A;">
+                    <a href="/admin/editar_rol/{{ u.id }}" class="btn-tabla btn-tabla-editar" style="background-color: #13283A; color: white; text-decoration: none; padding: 5px 10px; border-radius: 4px;">
                         ⚙️ Cambiar Permisos
                     </a>
                     
                     <form action="/admin/alternar_estado/{{ u.id }}" method="POST" style="display:inline;" onclick="return confirm('¿Desea cambiar el estado de acceso de este usuario?');">
-                        <button type="submit" class="btn-tabla" style="background-color: #f39c12; color: white;">
-                            {% if u.activo|int == 1 %}🔒 Bloquear{% else %}🔓 Activar{% endif %}
+                        <button type="submit" class="btn-tabla" style="background-color: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            {% if u.bloqueado|int == 1 %}🔓 Activar{% else %}🔒 Bloquear{% endif %}
                         </button>
                     </form>
                     
-                    <a href="/admin/eliminar_usuario/{{ u.id }}" onclick="return confirm('¿Seguro que querés eliminar definitivamente a este usuario?');" class="btn-tabla btn-tabla-eliminar">
+                    <a href="/admin/eliminar_usuario/{{ u.id }}" onclick="return confirm('¿Seguro que querés eliminar definitivamente a este usuario?');" class="btn-tabla btn-tabla-eliminar" style="background-color: #c0392b; color: white; text-decoration: none; padding: 5px 10px; border-radius: 4px;">
                         🗑️ Eliminar
                     </a>
                 </td>
@@ -70,3 +82,4 @@
     <br>
     {% endblock %}
 </div>
+</html>

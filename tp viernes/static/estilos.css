@@ -10,9 +10,7 @@ body {
     padding: 20px;
 }
 
-
                                                 /* CONTENEDORES*/
-
 
 .contenedor {
     width: 80%;
@@ -152,12 +150,12 @@ h3 {
                        /* SE USA PARA QUE LA IMAGEN LARGA DEL MEDIO NO SALGA DEL CONTENEDOR */
 
 .ancho-total {
-    width: calc(100% + 40px) !important; 
-    margin-left: -20px !important;      
-    max-width: none !important;
+    width: 100%;       /* Ocupa exactamente el 100% del contenedor */
+    margin-left: 0;    /* Quitamos el margen negativo */
+    max-width: 100%;   /* Aseguramos que nunca supere el ancho disponible */
     display: block; 
     height: 200px; 
-    object-fit: cover;
+    object-fit: cover; /* Esto mantiene la foto bien centrada y llena el espacio */
 }
 
 
@@ -187,7 +185,7 @@ h3 {
 .tarjeta img {
     width: 100%;
     height: 130px; /* Limita la imagen para que entre el texto abajo */
-    object-fit: contain;
+    object-fit:contain;
     align-self: center;
 }
 
@@ -204,6 +202,21 @@ h3 {
     justify-content: space-between;
     height: 100%;
     box-sizing: border-box;
+}
+
+/* Para que el h4 no se desborde si es muy largo */
+.tarjeta h4 {
+    font-size: 1rem;
+    margin: 0;
+    
+    /* Estas líneas hacen que el texto se corte con "..." si es muy largo */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Cantidad de líneas */
+    -webkit-box-orient: vertical;
+    
+    /* Esto es el estándar moderno que el editor sí reconoce como "bien escrito" */
+    line-clamp: 2; 
 }
 
                                     /* USADO EN LOS LINKS PARA ACCEDER A LAS CAT. DEL INICIO */
@@ -659,8 +672,8 @@ footer {
 /* --- CLASES UNIFICADAS PARA FORMULARIOS Y TARJETAS DE ACCESO --- */
 
 /* Contenedor tipo tarjeta adaptativa para formularios (Login, Registro, Carga) */
-.tarjeta-formulario {
-    background-color: #CADDEE; /* Mantiene tu color celeste de identidad */
+/*.tarjeta-formulario {
+    background-color: #CADDEE; 
     width: 100%;
     max-width: 420px;
     padding: 30px;
@@ -672,21 +685,21 @@ footer {
 }
 
 /* Títulos internos de los formularios */
-.tarjeta-formulario h2 {
+/*.tarjeta-formulario h2 {
     margin: 10px 0 5px 0;
     color: #13283A;
     font-size: 24px;
 }
 
 /* Subtítulos o textos descriptivos cortos */
-.tarjeta-formulario .subtitulo-form {
+/*.tarjeta-formulario .subtitulo-form {
     font-size: 0.9em;
     color: #555;
     margin-bottom: 20px;
 }
 
 /* Estilo unificado para las etiquetas (Labels) */
-.tarjeta-formulario label {
+/*.tarjeta-formulario label {
     display: block;
     text-align: left;
     font-weight: bold;
@@ -696,7 +709,7 @@ footer {
 }
 
 /* Inputs, Selects y Textareas unificados */
-.tarjeta-formulario input[type="text"],
+/*.tarjeta-formulario input[type="text"],
 .tarjeta-formulario input[type="email"],
 .tarjeta-formulario input[type="password"],
 .tarjeta-formulario input[type="number"],
@@ -714,7 +727,7 @@ footer {
 }
 
 /* Inputs específicos al enfocarse */
-.tarjeta-formulario input:focus,
+/*.tarjeta-formulario input:focus,
 .tarjeta-formulario select:focus,
 .tarjeta-formulario textarea:focus {
     border-color: #13283A;
@@ -723,7 +736,7 @@ footer {
 }
 
 /* Ajuste para los textareas (descripción de productos) */
-.tarjeta-formulario textarea {
+/*.tarjeta-formulario textarea {
     resize: vertical;
     min-height: 80px;
 }

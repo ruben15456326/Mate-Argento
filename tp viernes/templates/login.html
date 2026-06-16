@@ -1,16 +1,11 @@
 <head>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
     <title>Mate Argento - Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="todo-centrado">
-        <div class="tarjeta" style="background-color: #CADDEE; width: 420px; height: 440px ;">
-            <a href="/">
-                <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 120px; height: 120px;">
-            </a>
-    <!-- NOTIFICACIONES FLASH -->
+        <!-- NOTIFICACIONES FLASH -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="mensaje-push" id="notificacion">
@@ -27,6 +22,19 @@
             </script>
         {% endif %}
     {% endwith %}
+    <div class="todo-centrado">
+        <div class="tarjeta" style="
+            background-color: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            width: 420px; 
+            height: 450px;
+            border-radius: 15px;">
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logo_fondof.png') }}" style="width: 120px; height: 120px;">
+            </a>
     
             <h2>Iniciar Sesión</h2>
     
@@ -41,6 +49,15 @@
             </form>
     
             <br>
+          
+            <div class="login-footer">
+                <a href="{{ url_for('recuperar_password') }}" style="text-decoration: none; color: #111; font-size: 0.9em;">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+            
+            <br>
+
             <p>¿No tenés cuenta? <a href="/registro">Registrate acá</a></p>
             <br>
         </div>

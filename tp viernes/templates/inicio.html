@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
     <title>Mate Argento - Inicio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="contenedor">
 
     {% extends 'base.html' %}
     {% block content %}
-    <h2>Productos destacados</h2>
+    <h2 style="text-align: center;">Productos destacados</h2>
 
- <div class="contenedor-padre3">
+    <div class="contenedor-padre3">
 
         <div class="tarjeta">
-            <a href="/seccion/Yerbas" class="enlace-titulo efecto-verde"><h3>YERBAS</h3></a>
             {% set p = destacados['Yerbas'] %}
             {% if p %}
                 <h4>{{ p.nombre }}</h4>
@@ -30,7 +27,6 @@
         </div>
 
         <div class="tarjeta">
-            <a href="/seccion/Mates" class="enlace-titulo efecto-verde"><h3>MATES</h3></a>
             {% set p = destacados['Mates'] %}
             {% if p %}
                 <h4>{{ p.nombre }}</h4>
@@ -44,7 +40,6 @@
         </div>
 
         <div class="tarjeta">
-            <a href="/seccion/Bombillas" class="enlace-titulo efecto-verde"><h3>BOMBILLAS</h3></a>
             {% set p = destacados['Bombillas'] %}
             {% if p %}
                 <h4>{{ p.nombre }}</h4>
@@ -58,7 +53,6 @@
         </div>
 
         <div class="tarjeta">
-            <a href="/seccion/Termos" class="enlace-titulo efecto-verde"><h3>TERMOS</h3></a>
             {% set p = destacados['Termos'] %}
             {% if p %}
                 <h4>{{ p.nombre }}</h4>
@@ -73,7 +67,7 @@
 
     </div>
 
-    <h2>Todos los Productos</h2>
+    <h2 style="text-align: center;">Categorias</h2>
     <div class="contenedor-padre3">
     
         {% set categorias_nuevas = [
@@ -88,7 +82,11 @@
             {'nombre': 'Kits de Futbol', 'imagen': 'equipos.webp'},
             {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
             {'nombre': 'Kits con Mochila', 'imagen': 'set_mochila.webp'},
-            {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'}
+            {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'},
+            {'nombre': 'Yerbas', 'imagen': 'yerba-tradicional.png.'},
+            {'nombre': 'Mates', 'imagen': 'madera.webp'},
+            {'nombre': 'Bombillas', 'imagen': 'pico_loro.jpg'},
+            {'nombre': 'Termos', 'imagen': 'termo.jpg'}
         ] %}
 
         {% for cat in categorias_nuevas %}
@@ -102,6 +100,20 @@
             </div>
         {% endfor %}
 
+    </div>
+
+    <h2 style="text-align: center;">¿QUÉ HACE ÚNICOS A NUESTROS MATES?</h2>
+
+    <div style="display: flex; gap: 20px; justify-content: center; align-items: stretch; margin-top: 30px;">
+
+        <div class="tarjeta" style="width: 350px; height: 350px;"> 
+            <img src="{{ url_for('static', filename='img/gif_mate.gif') }}" alt="Animación" , style="height: 100%; object-fit: cover;">
+        </div>
+
+        <div class="tarjeta-pie" style="width: 350px; height: 350px; text-align: left; padding: 25px; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="margin-top: 0;">De nuestra familia a la tuya</h2>
+            <p style="font-size: 1.1rem; line-height: 1.5;">Detrás de Mate Argento hay manos que aman lo que hacen. Nos mueve la pasión por el ritual diario y el compromiso de llevar a tu mesa un producto con alma, dedicación y ese toque casero que nos hace únicos.</p>
+        </div>
     </div>
 
     <h2>Últimas opiniones</h2>
@@ -128,10 +140,6 @@
             <p>No hay opiniones todavía 🧉</p>
         {% endif %}
     </div>
-
-</div>
-   
-    <br><br>
     {% endblock %}
 </div>
 
