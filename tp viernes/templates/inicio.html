@@ -20,7 +20,7 @@
                 <a href="/detalle/{{ p.id }}">
                     <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
                 </a>
-                <p><b>${{ p.precio }}</b></p>
+                <p><b>${{ p.precio| dinero }}</b></p>
             {% else %}
                 <p>No hay productos en esta categoría</p>
             {% endif %}
@@ -33,7 +33,7 @@
                 <a href="/detalle/{{ p.id }}">
                     <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
                 </a>
-                <p><b>${{ p.precio }}</b></p>
+                <p><b>${{ p.precio| dinero }}</b></p>
             {% else %}
                 <p>No hay productos en esta categoría</p>
             {% endif %}
@@ -46,7 +46,7 @@
                 <a href="/detalle/{{ p.id }}">
                     <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
                 </a>
-                <p><b>${{ p.precio }}</b></p>
+                <p><b>${{ p.precio| dinero }}</b></p>
             {% else %}
                 <p>No hay productos en esta categoría</p>
             {% endif %}
@@ -59,37 +59,20 @@
                 <a href="/detalle/{{ p.id }}">
                     <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
                 </a>
-                <p><b>${{ p.precio }}</b></p>
+                <p><b>${{ p.precio| dinero }}</b></p>
             {% else %}
                 <p>No hay productos en esta categoría</p>
             {% endif %}
         </div>
-
     </div>
 
+    <a href="/todos_productos" style="display: block; text-align: right; color: BLACK; font-weight: bold; text-decoration: none;">
+        VER TODOS LOS PRODUCTOS
+    </a>
     <h2 style="text-align: center;">Categorias</h2>
-    <div class="contenedor-padre3">
-    
-        {% set categorias_nuevas = [
-            {'nombre': 'Conservadoras', 'imagen': 'conservadora.jpg'},
-            {'nombre': 'Juego de Pava', 'imagen': 'juego_pava.webp'},
-            {'nombre': 'Chopera', 'imagen': 'chopera.jpg'},
-            {'nombre': 'Cuchillos', 'imagen': 'cuchillos.jpg'},
-            {'nombre': 'Regalos Empresariales', 'imagen': 'regalo.jpg'},
-            {'nombre': 'Autocebantes', 'imagen': 'autocebantes.webp'},
-            {'nombre': 'Cafe x Mayor', 'imagen': 'cafe.jpg'},
-            {'nombre': 'Bolsos y Portatermos', 'imagen': 'Bolsos.jpg'},
-            {'nombre': 'Kits de Futbol', 'imagen': 'equipos.webp'},
-            {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
-            {'nombre': 'Kits con Mochila', 'imagen': 'set_mochila.webp'},
-            {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'},
-            {'nombre': 'Yerbas', 'imagen': 'yerba-tradicional.png.'},
-            {'nombre': 'Mates', 'imagen': 'madera.webp'},
-            {'nombre': 'Bombillas', 'imagen': 'pico_loro.jpg'},
-            {'nombre': 'Termos', 'imagen': 'termo.jpg'}
-        ] %}
 
-        {% for cat in categorias_nuevas %}
+    <div class="contenedor-padre3">
+        {% for cat in todas_las_categorias %}
             <div class="tarjeta">
                 <a href="/seccion/{{ cat.nombre }}" class="enlace-titulo efecto-verde">
                     <h3>{{ cat.nombre }}</h3>
@@ -98,8 +81,9 @@
                     <img src="{{ url_for('static', filename='img/' + cat.imagen) }}" alt="{{ cat.nombre }}">
                 </a>
             </div>
+        {% else %}
+            <p>No se encontraron categorías disponibles.</p>
         {% endfor %}
-
     </div>
 
     <h2 style="text-align: center;">¿QUÉ HACE ÚNICOS A NUESTROS MATES?</h2>
@@ -142,6 +126,5 @@
     </div>
     {% endblock %}
 </div>
-
 </body>
 </html>

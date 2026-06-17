@@ -22,7 +22,7 @@
             <br><br>
 
             <label for="precio">Precio ($):</label>
-            <input type="number" id="precio" name="precio" step="0.01" value="{{ producto.precio }}" required>
+            <input type="number" id="precio" name="precio" step="0.01" value="{{ producto.precio| dinero }}" required>
             <br><br>
 
             <label for="stock">Stock:</label>

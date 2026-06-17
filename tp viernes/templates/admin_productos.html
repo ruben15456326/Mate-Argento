@@ -43,10 +43,12 @@
                 <td style="color: #666;">{{ p.categoria }}</td>
                 
                 <td style="color: #6f42c1; font-weight: bold;">
-                    ${{ "%.2f"|format(p.precio_costo if p.precio_costo else 0.0) }}
+                    {{ p.precio_costo | dinero }}
                 </td>
                 
-                <td style="color: #28a745; font-weight: bold;">${{ "%.2f"|format(p.precio) }}</td>
+                <td style="color: #28a745; font-weight: bold;">
+                    {{ p.precio | dinero }}
+                </td>
                 <td>
                     <span class="badge-admin {% if p.stock > 0 %}badge-activo{% else %}badge-bloqueado{% endif %}">
                         {{ p.stock }} unidades

@@ -129,9 +129,9 @@
     <section class="splide" aria-label="Mi carrusel">
         <div class="splide__track">
             <ul class="splide__list">
-                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner6.png') }}" class="ancho-total" alt="Banner">></li>
-                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner9.png') }}" class="ancho-total" alt="Banner">></li>
-                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner8.png') }}" class="ancho-total" alt="Banner">></li>
+                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner6.png') }}" class="ancho-total" alt="Banner"></li>
+                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner9.png') }}" class="ancho-total" alt="Banner"></li>
+                <li class="splide__slide"><img src="{{ url_for('static', filename='img/banner8.png') }}" class="ancho-total" alt="Banner"></li>
             </ul>
         </div>
     </section>
@@ -177,14 +177,19 @@
     </footer>
      <!-- CARRUSEL DE IMAGENES -->
     <script>
-        document.addEventListener( 'DOMContentLoaded', function() {
-            new Splide( '.splide', {
-                type   : 'loop', // Para que vuelva a empezar
-                autoplay: true,   // Para que se mueva solo
-                perPage: 1,       // Cuántas fotos mostrar
-                gap    : 0,      // <--- ESTO ES IMPORTANTE: cero espacio entre slides
-                padding: 0,      // <--- ESTO ES IMPORTANTE: cero padding interno
-            }).mount();
+        src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"
+        document.addEventListener('DOMContentLoaded', function () {
+            var splide = new Splide('.splide', {
+                type        : 'loop',
+                autoplay    : true,
+                interval    : 2000,
+                speed       : 800,
+                perPage     : 1,
+                resetProgress: false,
+            });
+            splide.mount();
+            // Esta línea asegura que el autoplay esté siempre activo
+            splide.Components.Autoplay.play();
         });
     </script>
 </body>

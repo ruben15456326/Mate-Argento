@@ -7,26 +7,21 @@
 <div class="contenedor">
 {% extends 'base.html' %}
 {% block content %}
-
-    {# --- TÍTULO DINÁMICO --- #}
-    {% if busqueda %}
-        <h2 style="text-align: center;">Resultados para: "{{ busqueda }}"</h2>
-    {% else %}
-        <h2 style="text-align: center;">Nuestro Catálogo</h2>
-    {% endif %}
+    <h2 style="text-align: center;">Todos los productos</h2>
 
     <div class="contenedor-padre3">
         {% for p in productos %}
             <div class="tarjeta">
                 <h4>{{ p.nombre }}</h4>
-                <a href="/detalle/{{ p.id }}">
-                    <img src="{{ url_for('static', filename='img/' + p.imagen) }}" alt="{{ p.nombre }}">
-                </a>
-                <p><b>${{ p.precio| dinero }}</b></p>
+                <p>Precio: ${{ p.precio | dinero }}</p>
+        
+                {% if current_user.nivel >= 10 %}
+                    <p style="color: red;">Costo: ${{ p.precio_costo | dinero }}</p>
+                    <a href="/admin/editar/{{ p.id }}">Editar</a>
+                {% endif %}
+        
                 <form action="/agregar_al_carrito/{{ p.id }}" method="GET">
-                    <button type="submit" style="cursor: pointer; padding: 10px; background-color: orange; border: none; border-radius: 5px;">
-                        Comprar
-                    </button>
+                    <button type="submit">Comprar</button>
                 </form>
             </div>
         {% else %}

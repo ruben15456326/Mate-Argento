@@ -42,6 +42,31 @@ NIVELES_ACCESO = {
     'gestor': 5,
     'admin': 10
 }
+
+#agregado para poder tener las categorias de los productos a mano y no en los html
+CATEGORIAS_DATA = [
+    {'nombre': 'Conservadoras', 'imagen': 'conservadora.jpg'},
+    {'nombre': 'Juego de Pava', 'imagen': 'juego_pava.webp'},
+    {'nombre': 'Chopera', 'imagen': 'chopera.jpg'},
+    {'nombre': 'Cuchillos', 'imagen': 'cuchillos.jpg'},
+    {'nombre': 'Regalos Empresariales', 'imagen': 'regalo.jpg'},
+    {'nombre': 'Autocebantes', 'imagen': 'autocebantes.webp'},
+    {'nombre': 'Cafe x Mayor', 'imagen': 'cafe.jpg'},
+    {'nombre': 'Carteras', 'imagen': 'cartera.jpg'},
+    {'nombre': 'Kits de Futbol', 'imagen': 'equipos.webp'},
+    {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
+    {'nombre': 'Kits con Mochila', 'imagen': 'set_mochila.webp'},
+    {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'},
+    {'nombre': 'Yerbas', 'imagen': 'yerba-tradicional.png.'},
+    {'nombre': 'Mates', 'imagen': 'madera.webp'},
+    {'nombre': 'Bombillas', 'imagen': 'pico_loro.jpg'},
+    {'nombre': 'Termos', 'imagen': 'termo.jpg'}
+]
+@app.context_processor
+def inject_categorias():
+    # Esto hace que 'todas_las_categorias' esté disponible en todos los HTML
+    return dict(todas_las_categorias=CATEGORIAS_DATA)
+
 # DECORADOR PARA VALIDAR NIVELES DE ACCESO
 def requiere_nivel(nivel_minimo):
     """
@@ -151,21 +176,14 @@ class Usuario(db.Model):
             return True
         return False
 
-
-
-#  CLASE PRODUCTO (Modelo de BD + Lógica de Catálogo POO)
-
 # NUEVA TABLA PARA STOCK
 class Producto(db.Model):
-    
-    #Representa los artículos a la venta. Contiene la lógica de búsquedas 
-    #y el procesamiento técnico de carga de nuevos productos e imágenes.
-    
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     categoria = db.Column(db.String(50))
     precio = db.Column(db.Float, nullable=False)
-    precio_costo = db.Column(db.Float, nullable=False, default=0.0)#falta implementar
+    precio_costo = db.Column(db.Float, nullable=False, default=0.0)
     descripcion = db.Column(db.Text)
     imagen = db.Column(db.String(100))
     stock = db.Column(db.Integer, default=0)
@@ -210,6 +228,7 @@ class Producto(db.Model):
         nuevo_prod = cls(
             nombre=datos_form.get('nombre'),
             precio=float(datos_form.get('precio')),
+            precio_costo=float(datos_form.get('precio_costo')),
             categoria=datos_form.get('categoria'),
             stock=int(datos_form.get('stock', 0)),
             descripcion=datos_form.get('descripcion'),
@@ -282,7 +301,6 @@ class Producto(db.Model):
         """Muestra una representación legible del objeto en la consola."""
         return f"<Producto: {self.nombre}>"
 
-# clase de ventas no implementada
 class Venta(db.Model):
     __tablename__ = 'ventas'
     id = db.Column(db.Integer, primary_key=True)
@@ -537,6 +555,10 @@ def detalle_producto(id):
     p = Producto.query.get_or_404(id)
     return render_template('detalle.html', producto=p)
 
+@app.route('/todos_productos')
+def todos_los_productos():
+    productos = Producto.query.all()
+    return render_template('productos.html', productos=productos)
 
 # --- CONTROL DE ACCESO (LOGIN / LOGOUT / REGISTRO) ---
 
@@ -807,6 +829,11 @@ def nuevo_producto():
     return render_template('cargar_producto.html')
 
 # 3. RUTA EXCLUSIVA PARA EDITAR UN PRODUCTO EXISTENTE
+@app.template_filter('dinero')
+def formato_dinero(valor):
+    if valor is None: return "0.00"
+    # Esto convierte 159229000.0 en 159.229.000,00
+    return "{:,.2f}".format(valor).replace(",", "X").replace(".", ",").replace("X", ".")
 
 @app.route('/admin/editar_producto/<int:id>', methods=['GET', 'POST'])
 @requiere_nivel(5)
@@ -981,8 +1008,8 @@ def eliminar_usuario(id):
 def dashboard():
     # Renderizamos la plantilla pasando los conteos directos de las clases
     return render_template('admin/dashboard.html', 
-                           u_total=Usuario.query.count(), 
-                           p_total=Producto.query.count())
+        u_total=Usuario.query.count(), 
+        p_total=Producto.query.count())
 
 
 # SE CREA UN ADMIN INICIAL PARA PODER PROBAR EL PANEL DE ADMINISTRACIÓN
@@ -998,4 +1025,3 @@ def crear_admin():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

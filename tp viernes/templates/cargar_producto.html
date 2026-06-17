@@ -1,53 +1,54 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <title>Mate Argento - Cargar Producto</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
+    <title>Mate Argento - Cargar Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<div class="contenedor">
-{% extends 'base.html' %}
-
-{% block content %}
-    <br><br>
+<body>
     <div class="todo-centrado">
-        
-        <div class="tarjeta-formulario">
-            
-            <i class="fa-solid fa-boxes-stacked fa-3x" style="color: #13283A; margin-bottom: 10px;"></i>
+        <div class="tarjeta" style="
+            width: 420px; 
+            height: 850px;
+            border-radius: 15px;">
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logo_fondof.png') }}" style="width: 120px; height: 120px;">
+            </a>
             <h2>Cargar Nuevo Producto</h2>
             <p class="subtitulo-form">Ingresá los datos para dar de alta un artículo en el catálogo</p>
-
             <form method="POST" enctype="multipart/form-data">
                 
                 <label>Nombre del Producto:</label>
                 <input type="text" name="nombre" placeholder="Ej: Mate Torpedo Cincelado" required>
-
+                <br><br>
                 <label>Precio Venta ($):</label>
                 <input type="number" step="0.01" name="precio" placeholder="Ej: 4500.00" required>
-
+                <br><br>
                 <label>Precio Costo ($):</label>
                 <input type="number" step="0.01" name="precio_costo" placeholder="Ej: 2500.00" required>
+                <br><br>
                 <p style="color: #666; font-size: 0.75em; margin: -5px 0 10px 0; text-align: left; font-style: italic;">
                     (Valor de compra al proveedor para calcular márgenes de ganancia)
                 </p>
-
+                <br><br>
                 <label>Categoría:</label>
                 <select name="categoria">
-                    <option value="Mates">Mates</option>
-                    <option value="Termos">Termos</option>
-                    <option value="Yerbas">Yerbas</option>
-                    <option value="Bombillas">Bombillas</option>
+                    {% for cat in todas_las_categorias %}
+                        <option value="{{ cat.nombre }}" 
+                            {% if producto and producto.categoria == cat.nombre %}selected{% endif %}>
+                            {{ cat.nombre }}
+                        </option>
+                    {% endfor %}
                 </select>
-
+                <br><br>
                 <label>Imagen del Producto:</label>
                 <input type="file" name="imagen" accept="image/*" required>
-
+                <br><br>
                 <label>Stock Inicial:</label>
                 <input type="number" name="stock" min="0" value="0" required>
-
+                <br><br>
                 <label>Descripción:</label>
                 <textarea name="descripcion" placeholder="Detalles del producto..."></textarea>
-
+                <br><br>
                 <button type="submit" class="btn-formulario">Guardar Producto</button>
             </form>
             
@@ -56,8 +57,6 @@
                 <i class="fa-solid fa-arrow-left"></i> Cancelar y volver
             </a> 
         </div>
-
     </div>
-    {% endblock %}
-</div>
+</body>
 </html>
