@@ -4,10 +4,10 @@
     <title>Mate Argento - Ventas</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
 </head>
-<div class="contenedor">
-    {% extends 'base.html' %}
-    {% block content %}
-    
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<div class="contenedor-padre4">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #e1e1e1; padding-bottom: 15px;">
         <h2 style="color: #13283A; margin: 0; font-size: 28px;">📊 Centro de Mandos: Historial de Ventas</h2>
         <a href="{{ url_for('dashboard') }}" style="background-color: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 14px;">

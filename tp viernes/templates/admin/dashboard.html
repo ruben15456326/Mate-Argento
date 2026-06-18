@@ -4,31 +4,20 @@
     <title>Mate Argento - Dashboard</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
 </head>
-<div class="contenedor">
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-{# 1. Esta clase 'contenedor' activará el width: 80% y el fondo blanco de tu CSS #}
-
-    
-    {# 2. Espaciado superior igual al de productos #}
+<br>
+<div class="contenedor-padre4">
     <br><br>
-
-    {# 3. Título con la fuente Georgia e italic que tenés en el CSS #}
     <h2 style="text-align: center;">Centro de Mandos - Mate Argento</h2>
-    
     <br>
-
-    {# 4. Tu grid-admin para las tarjetas #}
     <div class="grid-admin">
-        
-        <!-- TARJETA: USUARIOS -->
         <div class="tarjeta-admin">
             <i class="fa-solid fa-users-gear fa-3x"></i>
             <h3>Usuarios</h3>
             <p>Gestioná los permisos de tu equipo de trabajo.</p>
             <a href="{{ url_for('lista_usuarios') }}" class="btn-admin">Administrar</a>
         </div>
-        <!-- TARJETA:  PRODUCTOS -->
         <div class="tarjeta-admin">
             <i class="fa-solid fa-boxes-stacked fa-3x"></i>
             <h3>Productos</h3>

@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.jpeg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
-<body>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const header = document.querySelector('.bloque-superior');
+        const carrusel = document.querySelector('.splide');
+
+        function controlarHeader() {
+            const limite = carrusel.offsetHeight;
+            if (window.scrollY > limite) {
+                header.classList.add('header-fijo');
+            } else {
+                header.classList.remove('header-fijo');
+            }
+        }
+
+        window.addEventListener('scroll', controlarHeader);
+    });
+</script>
+
+<body class="{% block body_class %}fondo-inicio{% endblock %}">
     <!-- BARRA DE ANUNCIO -->
-    <div class="barra-anuncio" style="background-color: #13283A; color: #fff; padding: 7px 0; text-align: center;">
+    <div class="barra-anuncio" style="background-color: #111; color: #fff; padding: 7px 0; text-align: center;">
         <marquee behavior="scroll" direction="left" scrollamount="8" style="font-weight: bold;">
             🔥 15% OFF PAGANDO CON TRANSFERENCIA --- 🧉 ENVÍOS GRATIS EN COMPRAS MAYORES A $50.000 --- 🇦🇷 MATE ARGENTO
         </marquee>
     </div>
-
     <!-- NOTIFICACIONES FLASH -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -38,7 +53,7 @@
 
     <header class="bloque-superior">
         <a href="/">
-            <img src="{{ url_for('static', filename='img/logo.jpeg') }}" class="logo-personalizado" alt="Mate Argento">
+            <img src="{{ url_for('static', filename='img/logo_fondof.png') }}" class="logo-personalizado" alt="Mate Argento">
         </a>
 
         <form action="{{ url_for('buscar') }}" method="GET">
@@ -56,8 +71,6 @@
                 <nav>
                     <span>Hola, <b>{{ session['usuario_nombre'] }}</b></span> | 
                     {% if session.get('usuario_rol') == 'admin' or session.get('usuario_rol') == 'gestor' %}
-                        <!-- Botón destacado para el administrador -->
-                        <!-- <a href="/admin/nuevo_producto" style="color: red; font-weight: bold;">[ PANEL CARGA ]</a> | -->
                          <a href="/admin/dashboard" style="color: #e6222c; font-weight: bold; text-decoration: none;">
                             <i class="fa-solid fa-gauge-high"></i> [ PANEL DE CONTROL ]
                         </a> |
@@ -75,7 +88,7 @@
             <!-- CARRITO DESPLEGABLE -->
             <details class="carrito-desplegable" id="mi-carrito-desplegable">
                 <summary class="carrito-summary">
-                    🛒 <b class="enlace-titulo">Mi Carrito ({{ total_unidades }})</b>
+                    🛒 <b class="enlace-titulo2">Mi Carrito ({{ total_unidades }})</b>
                 </summary> 
                 
                 <div class="carrito-contenido">
@@ -118,7 +131,7 @@
                             </form>
                         </div>
                     {% else %}
-                        <p class="carrito-vacio">Tu carrito está vacío 🧉</p>
+                        <p class="carrito-vacio" style="color: #000;">Tu carrito está vacío 🧉</p>
                     {% endif %}
                 </div>
             </details>

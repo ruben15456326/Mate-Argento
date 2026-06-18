@@ -1,29 +1,35 @@
                                                     /* BODY GENERAL*/
 body {
-    background-color: #ccc;
-    /* Flask busca la carpeta img que está al mismo nivel que el CSS */
-    background-image: url('img/mujer.jpg'); 
+    margin: 0;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    margin: 0;
-    padding: 20px;
 }
+
+.fondo-inicio {
+    background-image: url('img/fondo_azul16.jpg');
+}
+
+.fondo-mujer {
+    background-image: url('img/mujer.jpg');
+}                
+
 
                                                 /* CONTENEDORES*/
 
 .contenedor {
     width: 80%;
     margin: auto;
-    background-color: #fff;
     /* Ajustado para que encuentre el fondo verde */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
     min-height: 500px; 
+    background-color: rgba(255, 255, 255, 0.0); 
+    border: 1px solid rgba(255, 255, 255, 0.0);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.0);
 }
 
 .contenedor > * {
@@ -39,9 +45,12 @@ body {
     align-items: flex-start;   /* Alinea los títulos arriba para que no queden desparejos */
     gap: 20px;                 /* Separa las columnas de forma idéntica cuando se amontonen */
     padding: 20px;
-    background-color: #CADDEE;
-    border-radius: 10px;
+    background-color: #000;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+}
+
+.contenedor-pie * {
+    color: #ccc;
 }
 
 .contenedor-padre2 {
@@ -54,7 +63,9 @@ body {
     padding: 20px;
     background-color: #90b9db;
     border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    background-color: rgba(255, 255, 255, 0.0); 
+    border: 1px solid rgba(255, 255, 255, 0.0);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.0);
     min-height: 200px;      /* Por si la categoría está vacía, que no se vea el fondo aplastado */
 }
 
@@ -66,11 +77,27 @@ body {
     align-items: center;
     gap: 17px;              /* Esto crea un espacio exacto y parejo entre las tarjetas */
     padding: 20px;
-    background-color: #fff;
     border-radius: 10px;
-    min-height: 200px;      /* Por si la categoría está vacía, que no se vea el fondo aplastado */
+    min-height: 200px;
+    background-color: rgba(255, 255, 255, 0.0); 
+    border: 1px solid rgba(255, 255, 255, 0.0);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.0);
 }
 
+.contenedor-padre4 {
+    width: 80%;
+    margin: auto;
+    /* Ajustado para que encuentre el fondo verde */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 500px; 
+    background-color: rgba(255, 255, 255, 0.4); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
 
 
                                             /* BLOQUES */
@@ -80,19 +107,46 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;    /* [NUEVO] Permite que los elementos bajen si no hay espacio *//* Esto separa automáticamente los 3 elementos (logo, buscador, links) */
-    gap: 20px;
-    padding: 10px 20px;
+    flex-wrap: wrap;
+    position: fixed;
+    left: 0;
+    width: 100%;
+    top: 0;
+    z-index: 500;
+    padding: 12px 30px;
+    background-color: transparent;
+    transition: background-color 0.35s ease;
+    box-sizing: border-box; 
+}
+
+.bloque-superior:hover {
+    background-color: #000;
+}
+
+.bloque-superior.header-fijo {
+    background-color: #000 !important;
+}
+
+.bloque-superior * {
+    color: #ccc;
 }
 
 .bloque-cuenta {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center; 
-    gap: 15px;
-    font-family: 'Arial', sans-serif;
-    /*white-space: nowrap;*/
+    align-items: center;
+    gap: 18px;
+    font-family: var(--fuente);
+    color: var(--texto-claro);
+}
+
+.bloque-cuenta a {
+    color: var(--texto-claro);
+}
+
+.bloque-cuenta nav span {
+    color: var(--plata-claro);
 }
 
                                       /* NOTIFICACION PUSH MODERNA */
@@ -126,7 +180,7 @@ h2 {
     font-size: 25px;
     font-style: italic;
     text-transform: uppercase;
-    color: #3e2723;
+    color: #ccc;
 }
 
 h3 {
@@ -154,7 +208,7 @@ h3 {
     margin-left: 0;    /* Quitamos el margen negativo */
     max-width: 100%;   /* Aseguramos que nunca supere el ancho disponible */
     display: block; 
-    height: 200px; 
+    height: 300px; 
     object-fit: cover; /* Esto mantiene la foto bien centrada y llena el espacio */
 }
 
@@ -180,6 +234,15 @@ h3 {
     height: 100%;
     box-sizing: border-box;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarjeta:hover {
+    transform: translateY(-15px);
+    box-shadow: var(--sombra-fuerte);
+    border-color: var(--metal-borde);
 }
 
 .tarjeta img {
@@ -190,7 +253,21 @@ h3 {
 }
 
 .tarjeta-pie {
-    background-color: #CADDEE;
+    background-color: #000;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;              /* Ancho ideal en computadoras */
+    flex-grow: 1;              /* En pantallas medianas (tablets) se estiran para rellenar */
+    min-width: 220px;          /* En celulares, si el espacio es menor a 220px, ¡pum! tiran el salto de línea */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
+}
+.tarjeta-pie2 {
+    background-color: #ccc;
     padding: 10px;
     border-radius: 8px;
     width: 200px;              /* Ancho ideal en computadoras */
@@ -223,7 +300,13 @@ h3 {
 
 .enlace-titulo {
     text-decoration: none; /* Saca el subrayado */
-    color: #2c3e50;        /* Color elegante */
+    color: #000;        /* Color elegante */
+    cursor: pointer;
+}
+
+.enlace-titulo2 {
+    text-decoration: none; /* Saca el subrayado */
+    color: #ccc;        /* Color elegante */
     cursor: pointer;
 }
 
@@ -236,7 +319,7 @@ h3 {
     overflow: hidden;
     flex-grow: 1;       /* [NUEVO] Hace que el buscador use el espacio disponible */
     max-width: 400px;   /* [NUEVO] Evita que se estire demasiado en pantallas gigantes */
-    min-width: 150px;   /* [NUEVO] Evita que se encoja tanto que no se pueda usar */
+    min-width: 100px;   /* [NUEVO] Evita que se encoja tanto que no se pueda usar */
    
 }
 
@@ -351,6 +434,18 @@ footer {
     z-index: 1000;
     border-radius: 8px;
     box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .carrito-contenido {
+        position: fixed;
+        top: 70px;
+        left: 10px;
+        right: 10px;
+        min-width: 0;
+        width: auto;
+        max-width: calc(100% - 20px);
+    }
 }
 
 /* Lista interna de productos con scroll */

@@ -5,14 +5,13 @@
     <title>Mate Argento - Inicio</title>
 </head>
 <body>
+{% extends 'base.html' %}
+{% block content %}
+<br>
 <div class="contenedor">
-
-    {% extends 'base.html' %}
-    {% block content %}
     <h2 style="text-align: center;">Productos destacados</h2>
 
     <div class="contenedor-padre3">
-
         <div class="tarjeta">
             {% set p = destacados['Yerbas'] %}
             {% if p %}
@@ -64,17 +63,19 @@
                 <p>No hay productos en esta categoría</p>
             {% endif %}
         </div>
+        <a href="/todos_productos" class="efecto-verde" style="text-align: right; color: #ccc; font-weight: bold; text-decoration: none; background-color: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.1)">
+            VER TODOS LOS PRODUCTOS
+        </a>
+        <br>
     </div>
-
-    <a href="/todos_productos" style="display: block; text-align: right; color: BLACK; font-weight: bold; text-decoration: none;">
-        VER TODOS LOS PRODUCTOS
-    </a>
+    
     <h2 style="text-align: center;">Categorias</h2>
 
     <div class="contenedor-padre3">
         {% for cat in todas_las_categorias %}
             <div class="tarjeta">
-                <a href="/seccion/{{ cat.nombre }}" class="enlace-titulo efecto-verde">
+                <a href="/seccion/{{ cat.nombre }}" class="enlace-titulo">
                     <h3>{{ cat.nombre }}</h3>
                 </a>
                 <a href="/seccion/{{ cat.nombre }}">
@@ -94,8 +95,10 @@
             <img src="{{ url_for('static', filename='img/gif_mate.gif') }}" alt="Animación" , style="height: 100%; object-fit: cover;">
         </div>
 
-        <div class="tarjeta-pie" style="width: 350px; height: 350px; text-align: left; padding: 25px; display: flex; flex-direction: column; justify-content: center;">
-            <h2 style="margin-top: 0;">De nuestra familia a la tuya</h2>
+        <div class="tarjeta-pie2" style="width: 350px; height: 350px; text-align: left; padding: 25px; display: flex; flex-direction: column; justify-content: center;    background-color: rgba(255, 255, 255, 0.3); 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);">
+            <h2 style="margin-top: 0; color: black;">De nuestra familia a la tuya</h2>
             <p style="font-size: 1.1rem; line-height: 1.5;">Detrás de Mate Argento hay manos que aman lo que hacen. Nos mueve la pasión por el ritual diario y el compromiso de llevar a tu mesa un producto con alma, dedicación y ese toque casero que nos hace únicos.</p>
         </div>
     </div>
@@ -124,7 +127,8 @@
             <p>No hay opiniones todavía 🧉</p>
         {% endif %}
     </div>
-    {% endblock %}
 </div>
-</body>
+<br>
+{% endblock %}
+
 </html>

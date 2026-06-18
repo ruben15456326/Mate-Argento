@@ -1,60 +1,61 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <title>Mate Argento - Crear Usuarios</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
+    <title>Mate Argento - Crear Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<div class="contenedor">
-{% extends "base.html" %}
-
-{% block content %}
-<div class="todo-centrado">
-    {# Usamos tu clase 'tarjeta' y el color #CADDEE original #}
-    <div class="tarjeta" style="background-color: #CADDEE; width: 420px; min-height: 550px; padding: 20px; margin-top: -80px; position: relative; z-index: 100;">
-
-        {# Logo circular igual al de tu login #}
-        <a href="/">
-            <img src="{{ url_for('static', filename='img/logof.png') }}" style="width: 100px; height: 100px; margin-bottom: 10px;">
-        </a>
-
-        <h2 style="margin: 0;">Nuevo Integrante</h2>
-        <p style="font-size: 0.9em; color: #555; margin-bottom: 20px;">Alta de empleados y clientes</p>
-
-        <form action="/admin/crear_usuario" method="POST">
-            <label>Nombre Completo:</label><br>
-            <input type="text" name="nombre" placeholder="Nombre del usuario" required>
-            <br><br>
-
-            <label>Email Corporativo/Personal:</label><br>
-            <input type="email" name="email" placeholder="mail@ejemplo.com" required>
-            <br><br>
-
-            <label>Contraseña Temporal:</label><br>
-            <input type="password" name="password" placeholder="Asignar contraseña..." required>
-            <br><br>
-
-            {# El campo de Rol con el estilo de tus otros inputs #}
-            <label>Asignar Rol en el Sistema:</label><br>
-            <select name="rol" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background-color: white; font-family: inherit;">
-                <option value="cliente">Cliente (Usuario Final)</option>
-                <option value="gestor">Gestor (Empleado - Stock)</option>
-                <option value="admin">Administrador (Dueño)</option>
-            </select>
-            <br><br>
-
-            <button type="submit" style="background-color: #13283A; color: white; width: 100%;">
-                Crear Usuario
-            </button>
-        </form>
-        
-        <br>
-        <p>
-            <a href="{{ url_for('lista_usuarios') }}" style="text-decoration: none; color: #13283A; font-weight: bold;">
-                <i class="fa-solid fa-arrow-left"></i> Volver a la lista
+<body class="{% block body_class %}fondo-mujer{% endblock %}">
+    <div class="todo-centrado">
+        <div class="tarjeta" style="
+            background-color: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            width: 420px; 
+            height: 650px;
+            border-radius: 15px;">
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/logo_fondof.png') }}" style="width: 100px; height: 100px; margin-bottom: 10px;">
             </a>
-        </p>
+
+            <h2 style="margin: 0;">Nuevo Integrante</h2>
+            <p style="font-size: 0.9em; color: #555; margin-bottom: 20px;">Alta de empleados y clientes</p>
+
+            <form action="/admin/crear_usuario" method="POST">
+                <label>Nombre Completo:</label><br>
+                <input type="text" name="nombre" placeholder="Nombre del usuario" required>
+                <br><br>
+
+                <label>Email Corporativo/Personal:</label><br>
+                <input type="email" name="email" placeholder="mail@ejemplo.com" required>
+                <br><br>
+
+                <label>Contraseña Temporal:</label><br>
+                <input type="password" name="password" placeholder="Asignar contraseña..." required>
+                <br><br>
+
+                {# El campo de Rol con el estilo de tus otros inputs #}
+                <label>Asignar Rol en el Sistema:</label><br>
+               <select name="rol" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background-color: white; font-family: inherit;">
+                   <option value="cliente">Cliente (Usuario Final)</option>
+                    <option value="gestor">Gestor (Empleado - Stock)</option>
+                    <option value="admin">Administrador (Dueño)</option>
+                </select>
+                <br><br>
+
+                <button type="submit" style="background-color: #13283A; color: white; width: 100%;">
+                    Crear Usuario
+                </button>
+            </form>
+        
+            <br>
+            <p>
+                <a href="{{ url_for('lista_usuarios') }}" style="text-decoration: none; color: #13283A; font-weight: bold;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a la lista
+                </a>
+            </p>
+        </div>
     </div>
-</div>
-{% endblock %}
-</div>
+</body>
 </html>

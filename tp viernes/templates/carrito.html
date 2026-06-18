@@ -5,12 +5,12 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
 </head>
 <body>
-    <div class="contenedor">
-
-        {% extends 'base.html' %}
-        {% block content %}
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<div class="contenedor">
         <br><br><br>
-        <div class="contenedor-padre2">
+        <div class="contenedor-padre4">
             {% for p in opiniones %}
                 <div class="tarjeta">
                     <h4>{{ p.nombre_cliente }}</h4>

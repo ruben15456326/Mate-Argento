@@ -4,11 +4,10 @@
     <title>Mate Argento - Detalle</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
 </head>
-<div class="contenedor">
-
-    {% extends 'base.html' %}
-    {% block content %}
-
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<div class="contenedor-padre4">
     <div class="todo-centrado">
 
         <h2>{{ producto.nombre }}</h2>
@@ -26,6 +25,9 @@
         </form>
         <br>
     </div>    
-    {% endblock %}
+
 </div>
+<br><br>
+{% endblock %}
+<br><br>
 </html>

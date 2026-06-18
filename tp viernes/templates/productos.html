@@ -4,10 +4,10 @@
     <title>Mate Argento - Productos</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo_fondof.png') }}">
 </head>
-<div class="contenedor">
 {% extends 'base.html' %}
 {% block content %}
-
+<br>
+<div class="contenedor">
     {# --- TÍTULO DINÁMICO --- #}
     {% if busqueda %}
         <h2 style="text-align: center;">Resultados para: "{{ busqueda }}"</h2>
@@ -40,8 +40,8 @@
     <div style="text-align: center; padding-bottom: 20px;">
         <a href="/">Volver al inicio</a>
     </div>
-
-
-{% endblock %}
 </div>
+<br>
+{% endblock %}
+
 </html>
