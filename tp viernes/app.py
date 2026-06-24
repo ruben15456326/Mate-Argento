@@ -57,7 +57,7 @@ CATEGORIAS_DATA = [
     {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
     {'nombre': 'Kits con Mochila', 'imagen': 'set_mochila.webp'},
     {'nombre': 'Kits para Mujeres', 'imagen': 'kits_dama.webp'},
-    {'nombre': 'Yerbas', 'imagen': 'yerba.webp.'},
+    {'nombre': 'Yerbas', 'imagen': 'yerba.webp'},
     {'nombre': 'Mates', 'imagen': 'madera.webp'},
     {'nombre': 'Bombillas', 'imagen': 'pico_loro.jpg'},
     {'nombre': 'Termos', 'imagen': 'termo.jpg'}
