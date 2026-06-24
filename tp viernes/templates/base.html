@@ -127,7 +127,9 @@
                         <div class="seccion-finalizar">
                             <p class="total-texto">Total: ${{ "{:,.2f}".format(total_carrito) }}</p>
                             <form action="{{ url_for('finalizar_compra') }}" method="POST">
-                                <button type="submit" class="btn-pagar-carrito" style="width: 100%;">Finalizar Compra</button>
+                                <button type="submit" class="btn-pagar-carrito" style="width: 100%; background-color: #009ee3; color: white; font-weight: bold; border: none; padding: 10px; cursor: pointer;">
+                                    <i class="fa-solid fa-credit-card"></i> Pagar con Mercado Pago
+                                </button>
                             </form>
                         </div>
                     {% else %}

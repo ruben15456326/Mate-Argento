@@ -8,10 +8,18 @@ from flask_mail import Mail, Message
 from functools import wraps
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+import mercadopago
+
+
+
 
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
+# Configuración de Mercado Pago
+MERCADOPAGO_TOKEN = "APP_USR-2200403361890805-062414-c0a2c9afbfe4457775dd2e3f57ba2d43-170973688"
+sdk = mercadopago.SDK(MERCADOPAGO_TOKEN)
+DOMINIO_WEB = "https://carlyn-unmodeled-unalleviatingly.ngrok-free.dev/"
 app.secret_key = 'mi_llave_secreta_super_segura'
 ts = URLSafeTimedSerializer("CLAVE_SECRETA_PARA_EL_TOKEN")
 
@@ -315,10 +323,6 @@ class Venta(db.Model):
 
     @classmethod
     def registrar_desde_carrito(cls, usuario_id, items_compra):
-        
-        #LÓGICA POO: Valida stock, resta cantidades en los objetos de la DB,
-        #y guarda la cabecera y el detalle de la venta.
-        
         if not items_compra:
             raise ValueError("El carrito está vacío.")
 
@@ -344,19 +348,18 @@ class Venta(db.Model):
             )
             renglones_a_guardar.append((producto, cantidad, nuevo_detalle))
 
-        # 2. Si todo el stock es correcto, creamos la Venta
-        nueva_venta = cls(usuario_id=usuario_id, total=total_venta)
+        # 2. Creamos la Venta directamente como 'Pendiente'
+        nueva_venta = cls(usuario_id=usuario_id, total=total_venta, estado='Pendiente')
         db.session.add(nueva_venta)
         db.session.flush()  # Obtiene el ID de la venta de forma intermedia
 
         # 3. Descontamos stock físico y asociamos los renglones
         for producto, cantidad, detalle in renglones_a_guardar:
-            producto.stock -= cantidad  # Resta directa sobre el modelo Producto
+            producto.stock -= cantidad  
             detalle.venta_id = nueva_venta.id
             db.session.add(detalle)
 
-        # 4. Impactamos los cambios de forma transaccional y masiva
-        db.session.commit()
+        # OJO: Sacamos el db.session.commit() de acá para que controle la ruta.
         return nueva_venta
 
 
@@ -712,54 +715,113 @@ def restar_del_carrito(id):
 
 
 # RUTA PARA FNALIZAR LA COMPRA
+# RUTA PARA FINALIZAR LA COMPRA CON MERCADO PAGO
+
+
 @app.route('/carrito/finalizar', methods=['POST'])
 def finalizar_compra():
-    # 1. Seguridad: Verificamos si hay un usuario logueado en la sesión
     usuario_id = session.get('usuario_id')
     if not usuario_id:
         flash("Debés iniciar sesión para finalizar la compra.", "danger")
-        return redirect(url_for('inicio')) # O a tu ruta de login
+        return redirect(url_for('inicio'))
 
-    # 2. Recuperamos el carrito de la sesión
-    # Ajustá 'carrito' por el nombre exacto que le diste en tu session
     carrito_sesion = session.get('carrito', {})
-
     if not carrito_sesion:
         flash("Tu carrito está vacío.", "warning")
         return redirect(url_for('inicio'))
 
-    # 3. Estructuramos los objetos trayéndolos desde la BD
-    items_compra = []
+    # Armamos la lista únicamente para Mercado Pago
+    items_mercado_pago = []
     for prod_id, cantidad in carrito_sesion.items():
         producto = Producto.query.get(int(prod_id))
         if producto:
-            items_compra.append({
-                'producto': producto,
-                'cantidad': int(cantidad)
+            items_mercado_pago.append({
+                "title": producto.nombre,
+                "quantity": int(cantidad),
+                "unit_price": float(producto.precio),
+                "currency_id": "ARS"
             })
 
-    # 4. Ejecutamos el motor de compras
     try:
-        # Invocamos la lógica rica de POO
-        nueva_venta = Venta.registrar_desde_carrito(
-            usuario_id=usuario_id, 
-            items_compra=items_compra
-        )
-        
-        # 5. Éxito: Limpiamos el carrito de la sesión para que quede en 0
-        session['carrito'] = {}
-        session.modified = True # Le avisa a Flask que la sesión cambió
-        
-        flash(f"🛒 ¡Compra registrada con éxito! Pedido N° {nueva_venta.id}.", "success")
-        return redirect(url_for('inicio'))
+        # Configuramos la preferencia de Mercado Pago
+        preference_data = {
+            "items": items_mercado_pago,
+            "back_urls": {
+                # Ya no pasamos venta_id porque todavía NO existe en la base de datos
+                "success": f"{DOMINIO_WEB}/pago-exitoso",
+                "failure": f"{DOMINIO_WEB}/pago-fallido",
+                "pending": f"{DOMINIO_WEB}/pago-pendiente"
+            },
+            "auto_return": "approved"
+        }
 
-    except ValueError as e:
-        # Si falló el stock, atrapamos el mensaje y lo mandamos a la pantalla
-        flash(str(e), "danger")
-        return redirect(url_for('inicio')) # O a la vista del carrito
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+        
+        # ATENCIÓN: Usamos 'init_point' para producción real (dinero de verdad)
+        url_pago = preference["init_point"] 
 
-# Asegurate de importar tu modelo, por ejemplo: from models import Usuario
-# Si no tenés un archivo models.py, probablemente tengas la clase definida en app.py
+        return redirect(url_pago)
+
+    except Exception as e:
+        return f"Error al procesar la preferencia: {str(e)}", 500
+@app.route('/pago-exitoso')
+@app.route('/pago-exitoso')
+def pago_exitoso():
+    usuario_id = session.get('usuario_id')
+    carrito_sesion = session.get('carrito', {})
+    
+    if usuario_id and carrito_sesion:
+        # Reconstruimos la estructura que pide tu modelo Venta
+        items_compra = []
+        for prod_id, cantidad in carrito_sesion.items():
+            producto = Producto.query.get(int(prod_id))
+            if producto:
+                items_compra.append({
+                    'producto': producto,
+                    'cantidad': int(cantidad)
+                })
+        
+        try:
+            # RECIÉN ACÁ, con el pago aprobado, se descuenta stock y se guarda en la BD
+            nueva_venta = Venta.registrar_desde_carrito(usuario_id=usuario_id, items_compra=items_compra)
+            nueva_venta.estado = 'Completado'
+            db.session.commit()
+            
+            # Limpiamos el carrito porque la compra es un éxito total
+            session['carrito'] = {}
+            session.modified = True
+            flash("🛒 ¡Muchas gracias! Tu pago fue aprobado y la compra se registró con éxito.", "success")
+        except ValueError as e:
+            flash(str(e), "danger")
+            
+    return redirect(url_for('inicio'))
+
+
+@app.route('/pago-fallido')
+def pago_fallido():
+    venta_id = request.args.get('venta_id')
+    if venta_id:
+        venta = Venta.query.get(int(venta_id))
+        if venta and venta.estado != 'Cancelado':
+            venta.estado = 'Cancelado'
+            
+            # DEVOLUCIÓN DE STOCK: Como no pagó, le regresamos los productos al catálogo
+            for detalle in venta.detalles:
+                producto = Producto.query.get(detalle.producto_id)
+                if producto:
+                    producto.stock += detalle.cantidad
+                    
+            db.session.commit()
+            
+    flash("El pago fue cancelado o rechazado. Los productos volvieron al stock.", "danger")
+    return redirect(url_for('inicio'))
+
+
+@app.route('/pago-pendiente')
+def pago_pendiente():
+    flash("Tu pago está pendiente de aprobación por Mercado Pago.", "warning")
+    return redirect(url_for('inicio'))
 
 @app.route('/recuperar-password', methods=['GET', 'POST'])
 def recuperar_password():
