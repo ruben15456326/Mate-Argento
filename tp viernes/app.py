@@ -118,9 +118,10 @@ class Usuario(db.Model):
         # BUSCAMOS si ya existe alguien con ese email
         if cls.query.filter_by(email=email).first():
             return None  # Si existe, frena la operación devolviendo None
+        new_password=generate_password_hash(password)
         
         # SI NO EXISTE, recién ahí creamos el nuevo objeto
-        nuevo_usuario = cls(nombre=nombre, email=email, password=password, rol=rol, activo=True)
+        nuevo_usuario = cls(nombre=nombre, email=email, password=new_password, rol=rol, activo=True)
         db.session.add(nuevo_usuario) # Lo agregamos
         db.session.commit()           # Guardamos de verdad
         return nuevo_usuario
@@ -1024,4 +1025,7 @@ def crear_admin():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Render asigna un puerto automáticamente en la variable de entorno PORT
+    port = int(os.environ.get("PORT", 5000))
+    # Escucha en 0.0.0.0 para ser accesible desde el exterior
+    app.run(host="0.0.0.0", port=port, debug=False)
