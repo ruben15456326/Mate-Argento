@@ -45,9 +45,9 @@ NIVELES_ACCESO = {
 
 #agregado para poder tener las categorias de los productos a mano y no en los html
 CATEGORIAS_DATA = [
-    {'nombre': 'Conservadoras', 'imagen': 'conservadora.jpg'},
-    {'nombre': 'Juego de Pava', 'imagen': 'juego_pava.webp'},
-    {'nombre': 'Chopera', 'imagen': 'chopera.jpg'},
+    {'nombre': 'Conservadoras', 'imagen': 'Conservadora.jpg'},
+    {'nombre': 'Juego de Pava', 'imagen': 'Juego_pava.webp'},
+    {'nombre': 'Chopera', 'imagen': 'Chopera.jpg'},
     {'nombre': 'Cuchillos', 'imagen': 'Cuchillos.jpg'},
     {'nombre': 'Regalos Empresariales', 'imagen': 'regalo.jpg'},
     {'nombre': 'Autocebantes', 'imagen': 'autocebantes.webp'},
