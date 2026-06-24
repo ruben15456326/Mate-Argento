@@ -51,7 +51,7 @@ CATEGORIAS_DATA = [
     {'nombre': 'Cuchillos', 'imagen': 'Cuchillos.jpg'},
     {'nombre': 'Regalos Empresariales', 'imagen': 'regalo.jpg'},
     {'nombre': 'Autocebantes', 'imagen': 'autocebantes.webp'},
-    {'nombre': 'Cafe x Mayor', 'imagen': 'Cafe.jpg'},
+    {'nombre': 'Cafe x Mayor', 'imagen': 'Café.jpg'},
     {'nombre': 'Carteras', 'imagen': 'cartera.jpg'},
     {'nombre': 'Kits de Futbol', 'imagen': 'equipos.webp'},
     {'nombre': 'Kits Economicos', 'imagen': 'economicos.webp'},
