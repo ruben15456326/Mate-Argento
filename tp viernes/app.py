@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, session, redirect, flash
+juegocfrom flask import Flask, render_template, request, url_for, session, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func 
 import os
