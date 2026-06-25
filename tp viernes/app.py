@@ -10,16 +10,14 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import mercadopago
 
-
-
-
 #comentario inicial para probar el git
 #hola
 app = Flask(__name__)
 # Configuración de Mercado Pago
 MERCADOPAGO_TOKEN = "APP_USR-2200403361890805-062414-c0a2c9afbfe4457775dd2e3f57ba2d43-170973688"
 sdk = mercadopago.SDK(MERCADOPAGO_TOKEN)
-DOMINIO_WEB = "https://carlyn-unmodeled-unalleviatingly.ngrok-free.dev/"
+DOMINIO_WEB = "https://carlyn-unmodeled-unalleviatingly.ngrok-free.dev"
+
 app.secret_key = 'mi_llave_secreta_super_segura'
 ts = URLSafeTimedSerializer("CLAVE_SECRETA_PARA_EL_TOKEN")
 
@@ -730,17 +728,19 @@ def finalizar_compra():
         flash("Tu carrito está vacío.", "warning")
         return redirect(url_for('inicio'))
 
-    # Armamos la lista únicamente para Mercado Pago
     items_mercado_pago = []
+    nombres_productos = []
     for prod_id, cantidad in carrito_sesion.items():
         producto = Producto.query.get(int(prod_id))
         if producto:
+            nombres_productos.append(producto.nombre)
             items_mercado_pago.append({
                 "title": producto.nombre,
                 "quantity": int(cantidad),
                 "unit_price": float(producto.precio),
                 "currency_id": "ARS"
             })
+    session['nombres_productos'] = nombres_productos
 
     try:
         # Configuramos la preferencia de Mercado Pago
@@ -757,6 +757,11 @@ def finalizar_compra():
 
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
+        print("--- DEBUG MERCADO PAGO ---")
+        print(preference_response)
+        print("--------------------------")
+    
+        preferencia = preference_response["response"]
         
         # ATENCIÓN: Usamos 'init_point' para producción real (dinero de verdad)
         url_pago = preference["init_point"] 
@@ -765,9 +770,10 @@ def finalizar_compra():
 
     except Exception as e:
         return f"Error al procesar la preferencia: {str(e)}", 500
-@app.route('/pago-exitoso')
+
 @app.route('/pago-exitoso')
 def pago_exitoso():
+    nombres_productos = session.get('nombres_productos') or []
     usuario_id = session.get('usuario_id')
     carrito_sesion = session.get('carrito', {})
     
@@ -787,11 +793,37 @@ def pago_exitoso():
             nueva_venta = Venta.registrar_desde_carrito(usuario_id=usuario_id, items_compra=items_compra)
             nueva_venta.estado = 'Completado'
             db.session.commit()
+
+            # ... Datos del comprobante ...
+            print(f"--- DEBUG: El ID del usuario en sesión es: {usuario_id} ---")
+            usuario = Usuario.query.get(usuario_id) 
+
+            if usuario:
+                print(f"--- DEBUG: Usuario encontrado. Su mail es: '{usuario.email}' ---")
+                if usuario.email:
+                    print("--- DEBUG: Intentando enviar el correo... ---")
+        
+                    # Juntamos todos los nombres de la lista separados por coma
+                    lista_final = ", ".join(nombres_productos)
+        
+                    msg = Message("Comprobante Mate Argento", sender="tu_correo@gmail.com", recipients=[usuario.email])
+        
+                    # PASAMOS LA VARIABLE CON LOS PRODUCTOS REALES
+                    msg.html = render_template('comprobante.html', producto=lista_final, monto=nueva_venta.total) 
+        
+                    mail.send(msg)
+                    print("--- DEBUG: ¡Correo enviado con éxito por Flask-Mail! ---")
+                else:
+                    print("--- ERROR: El usuario no tiene email en la base de datos ---")
+            else:
+                print("--- ERROR: No se encontró el usuario en la BD o el ID es nulo ---")
+                
             
             # Limpiamos el carrito porque la compra es un éxito total
             session['carrito'] = {}
             session.modified = True
             flash("🛒 ¡Muchas gracias! Tu pago fue aprobado y la compra se registró con éxito.", "success")
+            return redirect(url_for('inicio'))
         except ValueError as e:
             flash(str(e), "danger")
             
@@ -822,6 +854,46 @@ def pago_fallido():
 def pago_pendiente():
     flash("Tu pago está pendiente de aprobación por Mercado Pago.", "warning")
     return redirect(url_for('inicio'))
+
+# COMPROBANTE AL MAIL
+
+@app.route('/comprobante')
+def comprobante():
+    # 1. Sacamos los datos de la sesión
+    producto = session.get('producto_comprado')
+    monto = session.get('monto_total')
+    
+    # Buscamos el usuario en la base de datos usando el ID de la sesión
+    # (Ajustá 'usuario_id' si en tu login la variable de sesión se llama 'user_id')
+    usuario_id = session.get('usuario_id') 
+    
+    if usuario_id:
+        usuario = Usuario.query.get(usuario_id)
+        email_cliente = usuario.email
+    else:
+        # Si no hay sesión, intentamos el plan B de la sesión
+        email_cliente = session.get('email_comprador')
+
+    # BLINDAJE: Si por alguna razón rarísima sigue siendo None, 
+    # salteamos el mail para que la página NO explote frente a los profesores
+    if not email_cliente:
+        print("--- ERROR: No se encontró el mail del cliente, redirigiendo directo ---")
+        return redirect(url_for('index')) # Cambiá 'index' por el nombre de tu ruta de inicio
+
+    # 2. Los datos que necesita el html para el mensaje
+    msg = Message("Tu comprobante de Mate Argento",
+                  sender="tu_correo@gmail.com", # Asegurate que este sea el mismo mail de tu config
+                  recipients=[email_cliente])
+                  
+    # 3. Le metemos el HTML con los datos
+    msg.html = render_template('comprobante.html', producto=producto, monto=monto)
+    
+    # 4. Lo enviamos
+    mail.send(msg)
+    
+    # 5. ¡VOLVER AL INICIO AUTOMÁTICAMENTE!
+    # Reemplazamos el texto plano por una redirección al Home
+    return redirect(url_for('login')) # Si tu función de inicio se llama 'home', poné 'home' acá
 
 @app.route('/recuperar-password', methods=['GET', 'POST'])
 def recuperar_password():
