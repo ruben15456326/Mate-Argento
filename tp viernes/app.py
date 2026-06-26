@@ -1056,21 +1056,24 @@ def lista_ventas():
     ingresos_brutos = 0.0
     costos_totales = 0.0
     ganancia_neta = 0.0
+    ventas_concretadas = 0  # Nuevo contador para reflejar solo lo pagado
 
     # 3. Barremos las ventas y sus detalles calculando los márgenes reales
     for v in ventas_totales:
-        ingresos_brutos += v.total
-        
-        # Recorremos cada renglón de cada venta
-        for detalle in v.detalles:
-            # Buscamos el precio al que compramos el producto al proveedor
-            # Usamos un short-if por si algún producto viejo quedó en Null
-            costo_unitario = detalle.producto.precio_costo if detalle.producto.precio_costo else 0.0
+        # CORRECCIÓN: Solo sumamos al total del negocio si el pago fue COMPLETADO
+        if v.estado == 'Completado':
+            ingresos_brutos += v.total
+            ventas_concretadas += 1
             
-            # Costo total del renglón = costo de proveedor * cantidad que llevó el cliente
-            costos_totales += (costo_unitario * detalle.cantidad)
+            # Recorremos cada renglón de cada venta completada
+            for detalle in v.detalles:
+                # Buscamos el precio al que compramos el producto al proveedor
+                costo_unitario = detalle.producto.precio_costo if detalle.producto.precio_costo else 0.0
+                
+                # Costo total del renglón = costo de proveedor * cantidad que llevó el cliente
+                costos_totales += (costo_unitario * detalle.cantidad)
 
-    # La ganancia real es la facturación menos lo que nos costó la mercadería
+    # La ganancia real es la facturación de completados menos sus costos
     ganancia_neta = ingresos_brutos - costos_totales
 
     # 4. Renderizamos la plantilla pasándole los datos y las métricas formateadas
@@ -1079,9 +1082,9 @@ def lista_ventas():
         ventas=ventas_totales,
         ingresos=ingresos_brutos,
         ganancia=ganancia_neta,
-        cantidad_pedidos=len(ventas_totales)
+        # Pasamos el nuevo contador para las tarjetas de arriba
+        cantidad_pedidos=ventas_concretadas 
     )
-
 # RUTA PARA LISTAR USUARIOS (SOLO ADMIN)
 @app.route('/admin/usuarios')
 @requiere_nivel(10) # Solo el Administrador absoluto

@@ -49,6 +49,7 @@
                     <th style="padding: 15px 20px; color: #555;">Fecha y Hora</th>
                     <th style="padding: 15px 20px; color: #555;">ID Usuario</th>
                     <th style="padding: 15px 20px; color: #555;">Artículos Comprados</th>
+                    <th style="padding: 15px 20px; color: #555;">Estado Pago</th>
                     <th style="padding: 15px 20px; color: #555; text-align: right;">Total Abonado</th>
                 </tr>
             </thead>
@@ -66,14 +67,23 @@
                                 {% endfor %}
                             </ul>
                         </td>
-                        <td style="padding: 15px 20px; text-align: right; font-weight: bold; color: #28a745; font-size: 16px;">
+                        <td style="padding: 15px 20px;">
+                            {% if v.estado == 'Completado' %}
+                                <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Completado</span>
+                            {% elif v.estado == 'Pendiente' %}
+                                <span style="background-color: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Pendiente</span>
+                            {% else %}
+                                <span style="background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">{{ v.estado or 'Cancelado' }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 15px 20px; text-align: right; font-weight: bold; {% if v.estado == 'Completado' %}color: #28a745;{% else %}color: #6c757d; font-style: italic;{% endif %} font-size: 16px;">
                             ${{ "{:,.2f}".format(v.total) }}
                         </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="5" style="padding: 40px; text-align: center; color: #999; font-style: italic;">
+                        <td colspan="6" style="padding: 40px; text-align: center; color: #999; font-style: italic;">
                             <i class="fas fa-info-circle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i> No se registran ventas realizadas todavía en la plataforma.
                         </td>
                     </tr>
@@ -81,6 +91,6 @@
             </tbody>
         </table>
     </div>
-    {% endblock %}
 </div>
+{% endblock %}
 </html>
