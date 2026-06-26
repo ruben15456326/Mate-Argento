@@ -730,9 +730,15 @@ def finalizar_compra():
 
     items_mercado_pago = []
     nombres_productos = []
+    
+    # === 🔥 NUEVO: CONTROL DE STOCK PREVIO A PAGAR ===
     for prod_id, cantidad in carrito_sesion.items():
         producto = Producto.query.get(int(prod_id))
         if producto:
+            if producto.stock < int(cantidad):
+                flash(f"Disculpá, nos quedamos sin stock suficiente de: {producto.nombre} (Disponibles: {producto.stock}). Modificá tu carrito.", "danger")
+                return redirect(url_for('inicio')) # O a la ruta de tu vista del carrito
+            
             nombres_productos.append(producto.nombre)
             items_mercado_pago.append({
                 "title": producto.nombre,
@@ -740,6 +746,8 @@ def finalizar_compra():
                 "unit_price": float(producto.precio),
                 "currency_id": "ARS"
             })
+    # ==================================================
+    
     session['nombres_productos'] = nombres_productos
 
     try:
@@ -789,12 +797,13 @@ def pago_exitoso():
                 })
         
         try:
-            # RECIÉN ACÁ, con el pago aprobado, se descuenta stock y se guarda en la BD
+            # invocamos tu lógica de clase: descuenta stock, crea renglones y la venta como 'Pendiente'
             nueva_venta = Venta.registrar_desde_carrito(usuario_id=usuario_id, items_compra=items_compra)
+            # Como Mercado Pago ya dio el OK, pasamos el estado a 'Completado'
             nueva_venta.estado = 'Completado'
             db.session.commit()
 
-            # ... Datos del comprobante ...
+            # --- Envío del Comprobante por Mail ---
             print(f"--- DEBUG: El ID del usuario en sesión es: {usuario_id} ---")
             usuario = Usuario.query.get(usuario_id) 
 
@@ -806,9 +815,9 @@ def pago_exitoso():
                     # Juntamos todos los nombres de la lista separados por coma
                     lista_final = ", ".join(nombres_productos)
         
-                    msg = Message("Comprobante Mate Argento", sender="tu_correo@gmail.com", recipients=[usuario.email])
+                    msg = Message("Comprobante Mate Argento", sender=app.config['MAIL_DEFAULT_SENDER'], recipients=[usuario.email])
         
-                    # PASAMOS LA VARIABLE CON LOS PRODUCTOS REALES
+                    # Pasamos las variables al HTML del comprobante
                     msg.html = render_template('comprobante.html', producto=lista_final, monto=nueva_venta.total) 
         
                     mail.send(msg)
@@ -818,17 +827,19 @@ def pago_exitoso():
             else:
                 print("--- ERROR: No se encontró el usuario en la BD o el ID es nulo ---")
                 
-            
-            # Limpiamos el carrito porque la compra es un éxito total
+            # Limpiamos el carrito porque la compra fue un éxito total
             session['carrito'] = {}
             session.modified = True
             flash("🛒 ¡Muchas gracias! Tu pago fue aprobado y la compra se registró con éxito.", "success")
             return redirect(url_for('inicio'))
+
         except ValueError as e:
-            flash(str(e), "danger")
+            # Si el método de clase tira error de stock en este último milisegundo:
+            db.session.rollback() # Cancelamos cualquier cambio colgado en la BD
+            flash(f"⚠️ Error crítico: El pago se acreditó pero hubo un problema: {str(e)}. Por favor, ponete en contacto con soporte.", "danger")
+            return redirect(url_for('inicio'))
             
     return redirect(url_for('inicio'))
-
 
 @app.route('/pago-fallido')
 def pago_fallido():
